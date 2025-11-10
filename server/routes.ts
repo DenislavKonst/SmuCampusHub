@@ -9,6 +9,9 @@ import { loginSchema, insertEventSchema, updateEventSchema } from "@shared/schem
 // JWT secret - in production this should be in environment variable
 const JWT_SECRET = process.env.SESSION_SECRET || "your-secret-key-change-in-production";
 
+// Overbooking multiplier - allows +5% additional capacity when enabled
+const OVERBOOKING_MULTIPLIER = 1.05;
+
 // Middleware to verify JWT token
 interface AuthRequest extends Request {
   user?: {
@@ -303,8 +306,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         (b) => b.status === "confirmed"
       ).length;
 
+      // Calculate effective capacity (base capacity + 5% if overbooking is allowed)
+      const effectiveCapacity = event.allowOverbooking 
+        ? Math.ceil(event.capacity * OVERBOOKING_MULTIPLIER) 
+        : event.capacity;
+
       // Determine status: confirmed or waitlisted
-      const status = confirmedCount < event.capacity ? "confirmed" : "waitlisted";
+      const status = confirmedCount < effectiveCapacity ? "confirmed" : "waitlisted";
 
       const booking = await storage.createBooking({
         eventId,
@@ -336,16 +344,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.deleteBooking(req.params.id);
 
       // If cancelled booking was confirmed, promote first waitlisted student
+      // but only if we're under the effective capacity
       if (wasConfirmed) {
-        const eventBookings = await storage.getBookingsByEvent(booking.eventId);
-        const waitlisted = eventBookings
-          .filter((b) => b.status === "waitlisted")
-          .sort(
-            (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
-          );
+        const event = await storage.getEvent(booking.eventId);
+        if (event) {
+          const eventBookings = await storage.getBookingsByEvent(booking.eventId);
+          const confirmedCount = eventBookings.filter(
+            (b) => b.status === "confirmed"
+          ).length;
+          
+          // Calculate effective capacity (same logic as booking creation)
+          const effectiveCapacity = event.allowOverbooking 
+            ? Math.ceil(event.capacity * OVERBOOKING_MULTIPLIER) 
+            : event.capacity;
 
-        if (waitlisted.length > 0) {
-          await storage.updateBookingStatus(waitlisted[0].id, "confirmed");
+          // Only promote if we're under the effective capacity
+          if (confirmedCount < effectiveCapacity) {
+            const waitlisted = eventBookings
+              .filter((b) => b.status === "waitlisted")
+              .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+
+            if (waitlisted.length > 0) {
+              await storage.updateBookingStatus(waitlisted[0].id, "confirmed");
+            }
+          }
         }
       }
 

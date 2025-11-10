@@ -17,6 +17,9 @@ import bcrypt from "bcryptjs";
 import { db } from "./db";
 import { eq, and, sql } from "drizzle-orm";
 
+// Overbooking multiplier - allows +5% additional capacity when enabled
+const OVERBOOKING_MULTIPLIER = 1.05;
+
 export interface IStorage {
   // User methods
   getUser(id: string): Promise<User | undefined>;
@@ -477,11 +480,16 @@ export class DatabaseStorage implements IStorage {
     const bookedCount = eventBookings.filter((b) => b.status === 'confirmed').length;
     const waitlistedCount = eventBookings.filter((b) => b.status === 'waitlisted').length;
 
+    // Calculate effective capacity (base capacity + 5% if overbooking is allowed)
+    const effectiveCapacity = event.allowOverbooking 
+      ? Math.ceil(event.capacity * OVERBOOKING_MULTIPLIER) 
+      : event.capacity;
+
     return {
       ...event,
       bookedCount,
       waitlistedCount,
-      remainingSlots: event.capacity - bookedCount,
+      remainingSlots: effectiveCapacity - bookedCount,
     };
   }
 

@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/lib/auth';
 import { apiRequest, queryClient } from '@/lib/queryClient';
@@ -55,6 +56,7 @@ export default function EventForm() {
       endTime: '',
       location: '',
       capacity: 30,
+      allowOverbooking: 0,
       instructor: user?.fullName || '',
       instructorId: user?.id || '',
     },
@@ -72,6 +74,7 @@ export default function EventForm() {
         endTime: event.endTime,
         location: event.location,
         capacity: event.capacity,
+        allowOverbooking: event.allowOverbooking,
         instructor: event.instructor,
         instructorId: event.instructorId,
       });
@@ -371,6 +374,30 @@ export default function EventForm() {
                       )}
                     />
                   </div>
+
+                  <FormField
+                    control={form.control}
+                    name="allowOverbooking"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value === 1}
+                            onCheckedChange={(checked) => field.onChange(checked ? 1 : 0)}
+                            data-testid="checkbox-allow-overbooking"
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>
+                            Allow Overbooking (+5%)
+                          </FormLabel>
+                          <FormDescription>
+                            Enable overbooking to allow up to 5% more students than the base capacity (e.g., 40 → 42 spots)
+                          </FormDescription>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
 
                   <FormField
                     control={form.control}

@@ -115,8 +115,10 @@ export default function EventDetail() {
     );
   }
 
-  const percentage = (event.bookedCount / event.capacity) * 100;
-  const isFull = event.bookedCount >= event.capacity;
+  // Calculate effective capacity (bookedCount + remainingSlots)
+  const effectiveCapacity = event.bookedCount + event.remainingSlots;
+  const percentage = (event.bookedCount / effectiveCapacity) * 100;
+  const isFull = event.remainingSlots === 0;
   const userBooking = userBookings?.find((b) => b.eventId === eventId);
   const canBook =
     user &&
@@ -222,7 +224,7 @@ export default function EventDetail() {
                       <div className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">
-                          {event.bookedCount} / {event.capacity} spots filled
+                          {event.bookedCount} / {effectiveCapacity} spots filled
                         </span>
                       </div>
                       <span className="text-sm font-medium">

@@ -53,9 +53,10 @@ export default function Home() {
   };
 
   const getStatusBadge = (event: EventWithStats) => {
-    const percentage = (event.bookedCount / event.capacity) * 100;
+    const effectiveCapacity = event.bookedCount + event.remainingSlots;
+    const percentage = (event.bookedCount / effectiveCapacity) * 100;
 
-    if (event.bookedCount >= event.capacity) {
+    if (event.remainingSlots === 0) {
       return <Badge variant="destructive" className="text-xs">Full - Waitlist</Badge>;
     } else if (percentage >= 80) {
       return <Badge className="bg-yellow-500/10 text-yellow-700 dark:text-yellow-300 border-yellow-500/20 text-xs">Limited</Badge>;
@@ -162,7 +163,8 @@ export default function Home() {
         ) : filteredEvents && filteredEvents.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.map((event) => {
-              const percentage = (event.bookedCount / event.capacity) * 100;
+              const effectiveCapacity = event.bookedCount + event.remainingSlots;
+              const percentage = (event.bookedCount / effectiveCapacity) * 100;
               return (
                 <Card key={event.id} className="hover-elevate group" data-testid={`card-event-${event.id}`}>
                   <CardHeader className="space-y-2">
@@ -204,7 +206,7 @@ export default function Home() {
                         <div className="flex items-center gap-2 text-muted-foreground">
                           <Users className="h-4 w-4" />
                           <span>
-                            {event.bookedCount}/{event.capacity} spots filled
+                            {event.bookedCount}/{effectiveCapacity} spots filled
                           </span>
                         </div>
                         {getStatusBadge(event)}

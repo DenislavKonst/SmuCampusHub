@@ -34,6 +34,7 @@ export const events = pgTable("events", {
   capacity: integer("capacity").notNull(),
   instructor: text("instructor").notNull(),
   instructorId: varchar("instructor_id").notNull().references(() => users.id),
+  allowOverbooking: integer("allow_overbooking").notNull().default(0), // 0 = false, 1 = true (allows +5% capacity)
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
