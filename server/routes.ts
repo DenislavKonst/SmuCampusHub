@@ -5,6 +5,8 @@ import bcrypt from "bcryptjs";
 import { Parser } from 'json2csv';
 import { storage } from "./storage";
 import { loginSchema, insertEventSchema, updateEventSchema } from "@shared/schema";
+import { loggingMiddleware } from "./middleware/logging";
+import { db } from "./db";
 
 // JWT secret - in production this should be in environment variable
 const JWT_SECRET = process.env.SESSION_SECRET || "your-secret-key-change-in-production";
@@ -65,9 +67,38 @@ function requireStaff(req: AuthRequest, res: Response, next: NextFunction) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Health check endpoint
-  app.get("/api/health", (req, res) => {
-    res.json({ status: "ok", timestamp: new Date().toISOString() });
+  // Add logging middleware
+  app.use(loggingMiddleware);
+
+  // Health check endpoint with database status
+  app.get("/api/health", async (req, res) => {
+    try {
+      // Test database connection
+      await db.execute('SELECT 1');
+      
+      res.json({
+        status: "healthy",
+        timestamp: new Date().toISOString(),
+        database: {
+          status: "connected",
+          type: "postgresql"
+        },
+        system: {
+          nodeVersion: process.version,
+          platform: process.platform,
+          uptime: process.uptime()
+        }
+      });
+    } catch (error: any) {
+      res.status(503).json({
+        status: "unhealthy",
+        timestamp: new Date().toISOString(),
+        database: {
+          status: "disconnected",
+          error: error.message
+        }
+      });
+    }
   });
 
   // Authentication endpoint
