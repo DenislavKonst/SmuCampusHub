@@ -33,13 +33,14 @@ import { insertEventSchema, type InsertEvent, type Event } from '@shared/schema'
 export default function EventForm() {
   const [, setLocation] = useLocation();
   const [isEditMode, params] = useRoute('/events/:id/edit');
+  const [isCreateMode] = useRoute('/events/create');
   const eventId = params?.id;
   const { user } = useAuth();
   const { toast } = useToast();
 
   const { data: event, isLoading: eventLoading } = useQuery<Event>({
     queryKey: [`/api/events/${eventId}`],
-    enabled: !!eventId && isEditMode,
+    enabled: !!eventId && isEditMode && !isCreateMode,
   });
 
   const form = useForm<InsertEvent>({
@@ -132,7 +133,7 @@ export default function EventForm() {
     return null;
   }
 
-  if (eventLoading && isEditMode) {
+  if (eventLoading && isEditMode && !isCreateMode) {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />

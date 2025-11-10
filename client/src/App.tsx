@@ -26,7 +26,6 @@ function Router() {
     <Switch>
       <Route path="/login" component={Login} />
       <Route path="/" component={Home} />
-      <Route path="/events/:id" component={EventDetail} />
       <Route path="/dashboard">
         {() => <ProtectedRoute component={Dashboard} />}
       </Route>
@@ -36,6 +35,7 @@ function Router() {
       <Route path="/events/:id/edit">
         {() => <ProtectedRoute component={EventForm} />}
       </Route>
+      <Route path="/events/:id" component={EventDetail} />
       <Route component={NotFound} />
     </Switch>
   );
