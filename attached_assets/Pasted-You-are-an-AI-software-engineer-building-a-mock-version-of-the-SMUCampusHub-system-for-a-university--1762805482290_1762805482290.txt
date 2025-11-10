@@ -1,0 +1,72 @@
+You are an AI software engineer building a mock version of the SMUCampusHub system for a university event booking platform.
+The goal is to generate a simple but functional full-stack web app that can be tested for functionality, automation, and non-functional performance (for coursework in software testing).
+🎯 Project Overview
+SMUCampusHub is a university platform where students and staff can:
+Browse and search events (lectures, labs, office hours)
+View event details (capacity, remaining slots, waitlist status)
+Book and cancel events
+Automatically promote waitlisted users when a slot opens
+Handle basic authentication (Student / Staff roles)
+Allow staff to create/edit events, set capacity, and export attendees to CSV
+🧱 System Requirements
+Backend:
+Use Python + FastAPI (or Express.js if preferred)
+REST API endpoints:
+POST /auth/login → returns JWT + role
+GET /events → list events with filters (date, type, department)
+GET /events/{id} → fetch event details
+POST /bookings → student books an event
+DELETE /bookings/{id} → cancel a booking
+POST /events (Staff only) → create new event
+PUT /events/{id} (Staff only) → edit event
+GET /events/{id}/export (Staff only) → CSV export of attendees
+Basic in-memory or SQLite storage for users, events, and bookings.
+Automatic waitlist promotion: when someone cancels, the first waitlisted student is promoted.
+Frontend:
+Use React (Vite) or simple HTML/JS.
+Pages:
+Home: event search/filter
+Event details: view + book/cancel
+Dashboard (Student): list of bookings
+Dashboard (Staff): event management and CSV export
+Use basic styling (Tailwind or Bootstrap).
+⚙️ Non-functional Simulation
+Simulate concurrency by allowing multiple users to book the same event to test capacity rules.
+Include environment variables and .env.example for easy setup.
+Include seed data: 3 students, 2 staff members, 10 sample events.
+📦 Deliverables
+/backend/ (FastAPI or Express app)
+/frontend/ (React app or static pages)
+/tests/ folder with example API test scripts (Postman collection or PyTest skeleton)
+/data/ folder with sample users and events JSON
+A README.md explaining how to run the app locally
+Dockerfile (optional)
+🧩 Key Logic to Implement
+Capacity enforcement (can’t overbook beyond limit unless Staff + 5%)
+Waitlist promotion after cancellation
+Basic JWT role-based authorization (Student vs Staff)
+CSV export endpoint
+Validation for booking: students can only book events for their enrolled department
+🧪 Testing Support
+Include at least one Postman collection or /tests/api_tests.py
+Return consistent JSON for all responses (for easy automated testing)
+Add a /health endpoint for monitoring
+🎓 Constraints
+Keep the app lightweight (runnable locally)
+No real authentication or email integration — mock it
+Focus on logical correctness, not production quality
+🧰 Output Expectations
+Generate project folder structure and core source code
+Include README.md with setup + run commands
+Ensure the code is self-contained, requiring no external services
+When finished, print:
+Folder structure
+Backend main files (FastAPI or Express)
+Example event data (JSON)
+One or two example endpoints implemented
+You may generate the backend first, then frontend separately if needed.
+🧩 Recommended Stack for Simplicity
+Backend: FastAPI + SQLite (no ORM, just simple dicts or SQL queries)
+Frontend: React + Fetch API
+Testing: Postman / PyTest / Selenium IDE
+Deployment: Localhost
