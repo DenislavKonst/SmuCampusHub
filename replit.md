@@ -2,7 +2,7 @@
 
 ## Overview
 
-SMUCampusHub is a full-stack university event management system that enables students to discover and book academic events (lectures, labs, office hours) while providing staff with tools to create and manage these events. The platform features role-based access control, automated waitlist management, capacity enforcement, and real-time booking status updates.
+SMUCampusHub is a full-stack university event management system that enables students to discover and book academic events (lectures, labs, office hours) while providing staff with tools to create and manage these events. The platform features role-based access control, automated waitlist management, capacity enforcement with optional +5% overbooking, health monitoring, comprehensive request/response logging, and real-time booking status updates. The system is production-ready with PostgreSQL persistence, comprehensive E2E test coverage, and database connectivity monitoring.
 
 ## User Preferences
 
@@ -45,10 +45,11 @@ Preferred communication style: Simple, everyday language.
 **Technology Stack:**
 - Node.js with Express.js for the REST API server
 - TypeScript for type safety across the stack
-- In-memory storage implementation (MemStorage class) for development/testing
-- Drizzle ORM configured for PostgreSQL (production-ready schema defined)
+- PostgreSQL database with Drizzle ORM for persistence
 - bcryptjs for password hashing
 - jsonwebtoken (JWT) for stateless authentication
+- json2csv for CSV export functionality
+- Request/response logging middleware for debugging
 
 **API Design Pattern:**
 - RESTful endpoints following resource-based naming
@@ -59,6 +60,7 @@ Preferred communication style: Simple, everyday language.
 
 **Core Endpoints:**
 - `POST /api/auth/login` - Authentication with JWT generation
+- `GET /api/health` - Health check with database connectivity status
 - `GET /api/events` - List all events with computed statistics
 - `GET /api/events/:id` - Single event details
 - `POST /api/events` - Create event (staff only)
@@ -72,9 +74,13 @@ Preferred communication style: Simple, everyday language.
 
 **Business Logic:**
 
-*Capacity Enforcement:*
-- Hard limit: Students cannot book beyond event capacity
-- Automatic waitlist: When capacity is reached, new bookings enter waitlist
+*Capacity Enforcement & Overbooking:*
+- Base capacity defined per event
+- Optional overbooking: Staff can enable +5% additional capacity (allowOverbooking flag)
+- Effective capacity: `Math.floor(capacity * 1.05)` when overbooking enabled
+- Hard limit: Students cannot book beyond effective capacity
+- Automatic waitlist: When effective capacity is reached, new bookings enter waitlist
+- UI displays effective capacity when overbooking is enabled
 - Staff validation: Only event instructors can modify their events
 
 *Waitlist Automation:*
@@ -92,31 +98,42 @@ Preferred communication style: Simple, everyday language.
 
 ### Data Storage
 
-**In-Memory Implementation (Current):**
-- Three Map-based stores: users, events, bookings
-- UUID generation for entity IDs
-- Seed data loaded on server start (3 students, 2 staff, 10+ sample events)
-- All operations synchronous but wrapped in Promises for API consistency
+**PostgreSQL Database (Production):**
+- Active PostgreSQL database with Drizzle ORM
+- Automatic schema synchronization via `drizzle-kit push`
+- Foreign-key constraints for referential integrity
+- Cascade delete on event deletion (removes associated bookings)
+- Idempotent seed script populates initial data if database is empty
 
-**PostgreSQL Schema (Production-Ready):**
+**Database Schema:**
 
 *Users Table:*
-- Fields: id (UUID), username (unique), password (hashed), role, department, fullName
+- Fields: id (UUID), username (unique), password (bcrypt hashed), role, department, fullName
 - Indexes: username for login lookups
+- Seed data: 5 users (3 students: alice, bob, charlie; 2 staff: prof_smith, prof_jones)
 
 *Events Table:*
-- Fields: id, title, description, type, department, date, startTime, endTime, location, capacity, instructor, instructorId, createdAt
+- Fields: id, title, description, type, department, date, startTime, endTime, location, capacity, instructor, instructorId, allowOverbooking, createdAt
+- allowOverbooking: integer (0=false, 1=true) enables +5% capacity
+- Foreign key: instructorId → users.id
 - Supports filtering by department and type
+- Seed data: 10+ sample events across departments
 
 *Bookings Table:*
 - Fields: id, userId, eventId, status (confirmed/waitlisted), createdAt
-- Composite index on (userId, eventId) for duplicate prevention
-- Foreign keys to users and events tables
+- Foreign keys: userId → users.id, eventId → events.id (cascade delete)
+- Prevents duplicate bookings per user/event combination
 
 **Data Relationships:**
 - Users → Events: One-to-many (instructor creates multiple events)
-- Events → Bookings: One-to-many (event has multiple bookings)
+- Events → Bookings: One-to-many (event has multiple bookings, cascade delete)
 - Users → Bookings: One-to-many (user has multiple bookings)
+
+**Migration & Deployment:**
+- Database migrations managed by Drizzle Kit
+- Schema changes applied via `npm run db:push`
+- Seed script runs automatically on server start if database is empty
+- Environment variable: DATABASE_URL for connection
 
 ### Authentication & Security
 
@@ -144,6 +161,44 @@ Preferred communication style: Simple, everyday language.
 - Filtered to confirmed bookings only (excludes waitlist)
 - Content-Type: text/csv with attachment disposition header
 - Staff-only endpoint with event ownership validation
+
+### Health Monitoring & Logging
+
+**Health Endpoint (`/api/health`):**
+- Returns comprehensive system status
+- Database connectivity check via `SELECT 1` query
+- Response includes:
+  - Status: "healthy" or "unhealthy"
+  - Timestamp (ISO string)
+  - Database status and type (PostgreSQL)
+  - System info: Node version, platform, uptime
+- HTTP 503 status returned if database is disconnected
+- Useful for production monitoring and uptime checks
+
+**Request/Response Logging:**
+- Custom Express middleware logs all API requests
+- Request logging includes: timestamp, method, path, IP, user-agent, username
+- Response logging includes: timestamp, method, path, status code (color-coded), duration (ms)
+- Color coding: green for 2xx/3xx responses, red for 4xx/5xx errors
+- No sensitive data logged (request/response bodies excluded)
+- Helps with debugging and performance monitoring
+
+### Quality Assurance
+
+**Comprehensive E2E Test Suite:**
+- Playwright-based automated testing covering all critical workflows
+- Test coverage includes:
+  - Authentication flows (valid/invalid credentials)
+  - Event browsing and filtering (department/type filters)
+  - Student booking lifecycle (book, view on dashboard, cancel)
+  - Staff event CRUD operations (create, read, update, delete)
+  - Overbooking feature (effective capacity verification)
+  - Waitlist automation (capacity enforcement, automatic promotion)
+  - Department validation (cross-department booking prevention)
+  - CSV export functionality (staff-only attendee export)
+  - Role-based authorization (student vs staff permissions)
+- All tests passed successfully
+- Production-ready with comprehensive regression coverage
 
 ## External Dependencies
 
