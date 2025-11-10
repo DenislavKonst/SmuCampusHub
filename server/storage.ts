@@ -8,9 +8,14 @@ import {
   type InsertBooking,
   type BookingWithDetails,
   type EventWithStats,
+  users,
+  events,
+  bookings,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
+import { db } from "./db";
+import { eq, and, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User methods
@@ -436,4 +441,170 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database storage implementation using PostgreSQL
+export class DatabaseStorage implements IStorage {
+  // User methods
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  // Event methods
+  async getEvent(id: string): Promise<Event | undefined> {
+    const [event] = await db.select().from(events).where(eq(events.id, id));
+    return event || undefined;
+  }
+
+  async getEventWithStats(id: string): Promise<EventWithStats | undefined> {
+    const event = await this.getEvent(id);
+    if (!event) return undefined;
+
+    const eventBookings = await db.select().from(bookings).where(eq(bookings.eventId, id));
+    const bookedCount = eventBookings.filter((b) => b.status === 'confirmed').length;
+    const waitlistedCount = eventBookings.filter((b) => b.status === 'waitlisted').length;
+
+    return {
+      ...event,
+      bookedCount,
+      waitlistedCount,
+      remainingSlots: event.capacity - bookedCount,
+    };
+  }
+
+  async getAllEvents(): Promise<Event[]> {
+    return await db.select().from(events);
+  }
+
+  async getAllEventsWithStats(): Promise<EventWithStats[]> {
+    const allEvents = await this.getAllEvents();
+    return Promise.all(
+      allEvents.map(async (event) => {
+        const stats = await this.getEventWithStats(event.id);
+        return stats!;
+      }),
+    );
+  }
+
+  async getEventsByInstructor(instructorId: string): Promise<Event[]> {
+    return await db.select().from(events).where(eq(events.instructorId, instructorId));
+  }
+
+  async getEventsWithStatsByInstructor(instructorId: string): Promise<EventWithStats[]> {
+    const instructorEvents = await this.getEventsByInstructor(instructorId);
+    return Promise.all(
+      instructorEvents.map(async (event) => {
+        const stats = await this.getEventWithStats(event.id);
+        return stats!;
+      }),
+    );
+  }
+
+  async createEvent(insertEvent: InsertEvent): Promise<Event> {
+    const [event] = await db.insert(events).values(insertEvent).returning();
+    return event;
+  }
+
+  async updateEvent(id: string, updateEvent: UpdateEvent): Promise<Event | undefined> {
+    const [updated] = await db
+      .update(events)
+      .set(updateEvent)
+      .where(eq(events.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async deleteEvent(id: string): Promise<boolean> {
+    // Delete all bookings for this event first
+    await db.delete(bookings).where(eq(bookings.eventId, id));
+    
+    const result = await db.delete(events).where(eq(events.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Booking methods
+  async getBooking(id: string): Promise<Booking | undefined> {
+    const [booking] = await db.select().from(bookings).where(eq(bookings.id, id));
+    return booking || undefined;
+  }
+
+  async getBookingsByUser(userId: string): Promise<Booking[]> {
+    return await db.select().from(bookings).where(eq(bookings.userId, userId));
+  }
+
+  async getBookingsWithDetailsByUser(userId: string): Promise<BookingWithDetails[]> {
+    const userBookings = await this.getBookingsByUser(userId);
+    return Promise.all(
+      userBookings.map(async (booking) => {
+        const event = await this.getEvent(booking.eventId);
+        const user = await this.getUser(booking.userId);
+        return {
+          ...booking,
+          event: event!,
+          user: user!,
+        };
+      }),
+    );
+  }
+
+  async getBookingsByEvent(eventId: string): Promise<Booking[]> {
+    return await db.select().from(bookings).where(eq(bookings.eventId, eventId));
+  }
+
+  async getBookingsWithDetailsByEvent(eventId: string): Promise<BookingWithDetails[]> {
+    const eventBookings = await this.getBookingsByEvent(eventId);
+    return Promise.all(
+      eventBookings.map(async (booking) => {
+        const event = await this.getEvent(booking.eventId);
+        const user = await this.getUser(booking.userId);
+        return {
+          ...booking,
+          event: event!,
+          user: user!,
+        };
+      }),
+    );
+  }
+
+  async getUserBookingForEvent(userId: string, eventId: string): Promise<Booking | undefined> {
+    const [booking] = await db
+      .select()
+      .from(bookings)
+      .where(and(eq(bookings.userId, userId), eq(bookings.eventId, eventId)));
+    return booking || undefined;
+  }
+
+  async createBooking(insertBooking: InsertBooking): Promise<Booking> {
+    const [booking] = await db.insert(bookings).values(insertBooking).returning();
+    return booking;
+  }
+
+  async deleteBooking(id: string): Promise<boolean> {
+    const result = await db.delete(bookings).where(eq(bookings.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  async updateBookingStatus(id: string, status: string): Promise<Booking | undefined> {
+    const [updated] = await db
+      .update(bookings)
+      .set({ status })
+      .where(eq(bookings.id, id))
+      .returning();
+    return updated || undefined;
+  }
+}
+
+export const storage = new DatabaseStorage();
