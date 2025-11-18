@@ -1,0 +1,76 @@
+Basic Requirements: 
+Planning and estimation 
+• Produce a concise test plan that states scope, objectives, approach by testing 
+quadrant, environments, data needs, estimation of effort, and a high-level 
+schedule.  
+Test design and execution 
+• Design and execute functional/acceptance tests for the key flows (search → view 
+event → book → cancel) and for Staff role event management. 
+• Implement unit and component tests for critical logic (e.g. capacity checks, 
+waitlist promotion, input validation). 
+Page 5 / 13 
+CPS6002 Software Testing and Quality Assurance – Assessment Brief 
+• Exercise key API endpoints with appropriate requests/responses and error 
+handling. 
+• Record outcomes and evidence according to test execution and reporting 
+guidance.  
+Defect tracking 
+• Maintain a defect log with clear descriptions, steps to reproduce, and relevant 
+artefacts (e.g. screens, logs), reflecting effective defect tracking and 
+management. 
+Artefact Deliverables 
+• Test plan document (PDF). 
+• Test cases and execution evidence (screenshots/logs). 
+• Defect log (Excel, CSV, or integrated tool output). 
+Intermediate Requirements: 
+Test automation and tools 
+• Introduce test automation for suitable parts of SMUCampusHub (e.g. 
+repeatable functional flows and/or API checks) using popular automation 
+tools referenced in the module. Generate readable reports from automated 
+runs.  
+Usability and exploratory testing 
+• Conduct usability testing of key screens using appropriate evaluation 
+methods. Document findings and improvements. 
+• Run exploratory testing sessions (with clear goals) to uncover issues beyond 
+scripted cases. Report notable observations and follow-ups.  
+Metrics, communication and ethics 
+• Present key test metrics (e.g. test coverage at the level you can justify, 
+pass/fail counts, defect trends) and interpret them for key stakeholders. 
+• Briefly reflect on ethics and professional practice in your approach (e.g. 
+impartiality, data handling, and the implications of automation). 
+Artefact Deliverables 
+• Updated test plan showing automation strategy. 
+• Automated test scripts and reports. 
+Page 6 / 13 
+CPS6002 Software Testing and Quality Assurance – Assessment Brief 
+• Usability/accessibility evaluation summary. 
+• Updated defect log including exploratory testing findings. 
+Advanced Requirements: 
+Performance testing 
+• Apply performance testing fundamentals to representative SMUCampusHub 
+scenarios (e.g. searching events, confirming a booking, CSV export). Report 
+response characteristics and observations about system behaviour under load 
+and suggest improvements.  
+Security testing 
+• Perform security testing activities aligned to the module (e.g. 
+authentication/authorisation checks, input handling, session management). 
+Identify potential security vulnerabilities and provide evidence and 
+actionable recommendations.  
+Compatibility testing 
+• Execute a compatibility testing plan covering common browsers/viewports 
+and relevant platforms. Summarise cross-browser/platform issues and 
+proposed fixes.  
+Integrated Quality narrative 
+• Integrate results across quadrants into a succinct test report that explains 
+risks, priorities, and next steps, using module-aligned test metrics and 
+performance tracking to support your conclusions. 
+Artefact Deliverables 
+• Final, integrated test report (PDF) including test plan, executed cases, metrics, 
+defects, 
+exploratory/usability 
+findings, 
+reports, 
+performance/security/compatibility results, and risk-based recommendations. 
+automation 
+• Fully documented software artefact (ZIP) source code, test scripts, datasets, git 
+logs, and instructions for running the solution and reproducing tests.
