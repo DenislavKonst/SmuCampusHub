@@ -125,6 +125,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           id: user.id,
           username: user.username,
           role: user.role,
+          jti: `${user.id}-${Date.now()}-${Math.random().toString(36).substring(7)}`, // Unique JWT ID
         },
         JWT_SECRET,
         { expiresIn: "7d" }
