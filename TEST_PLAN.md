@@ -80,10 +80,10 @@ This test plan outlines the comprehensive testing strategy for SMUCampusHub, a u
 - API endpoint integration testing
 - Error handling and validation
 
-**Tools:** Playwright (E2E), Vitest (API)  
+**Tools:** Vitest (API), Manual E2E validation  
 **Estimated Effort:** 24 hours  
-**Tests Created:** 20 API integration tests  
-**Result:** 100% pass rate
+**Tests Created:** 20 API integration tests (100% passing)  
+**Note:** E2E automation with Playwright planned for future sprints
 
 ### Quadrant 3: Business-Facing Tests Critiquing the Product
 **Focus:** Exploratory, usability, and accessibility testing
@@ -220,7 +220,7 @@ This test plan outlines the comprehensive testing strategy for SMUCampusHub, a u
 
 ## 11. Automation Strategy
 
-**Test Automation Framework:** Vitest + Playwright
+**Test Automation Framework:** Vitest (Playwright E2E planned for future sprints)
 
 **Automated Tests:**
 - Unit tests: 100% automated (31 tests)
