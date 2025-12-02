@@ -54,7 +54,9 @@ export const bookings = pgTable("bookings", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   eventId: varchar("event_id").notNull().references(() => events.id, { onDelete: 'cascade' }),
   userId: varchar("user_id").notNull().references(() => users.id),
-  status: text("status").notNull(), // "confirmed" or "waitlisted"
+  status: text("status").notNull(), // "hold", "confirmed", "waitlisted", or "cancelled"
+  holdExpiresAt: timestamp("hold_expires_at"), // When hold expires (15 min from creation)
+  waitlistPosition: integer("waitlist_position"), // Position in waitlist (1 = first)
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

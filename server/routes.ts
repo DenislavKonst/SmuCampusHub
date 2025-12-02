@@ -325,10 +325,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create booking (students only)
+  // Create booking (students only) - supports hold flow
   app.post("/api/bookings", authenticateToken, async (req: AuthRequest, res) => {
     try {
-      const { eventId } = req.body;
+      const { eventId, useHold = false } = req.body;
 
       if (req.user!.role !== "student") {
         return res.status(403).json({ error: "Only students can book events" });
@@ -357,10 +357,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "You have already booked this event" });
       }
 
-      // Get current bookings
+      // Get current bookings (excluding expired holds)
       const eventBookings = await storage.getBookingsByEvent(eventId);
-      const confirmedCount = eventBookings.filter(
-        (b) => b.status === "confirmed"
+      const activeBookings = eventBookings.filter(b => {
+        if (b.status === 'hold' && b.holdExpiresAt) {
+          return new Date(b.holdExpiresAt) > new Date();
+        }
+        return b.status === 'confirmed' || b.status === 'waitlisted';
+      });
+      
+      const confirmedAndHoldCount = activeBookings.filter(
+        (b) => b.status === "confirmed" || b.status === "hold"
       ).length;
 
       // Calculate effective capacity (base capacity + 5% if overbooking is allowed)
@@ -368,18 +375,203 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ? Math.ceil(event.capacity * OVERBOOKING_MULTIPLIER) 
         : event.capacity;
 
-      // Determine status: confirmed or waitlisted
-      const status = confirmedCount < effectiveCapacity ? "confirmed" : "waitlisted";
+      // Determine status based on availability and useHold flag
+      let status: string;
+      let holdExpiresAt: Date | null = null;
+      let waitlistPosition: number | null = null;
+
+      if (confirmedAndHoldCount < effectiveCapacity) {
+        if (useHold) {
+          status = "hold";
+          holdExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+        } else {
+          status = "confirmed";
+        }
+      } else {
+        status = "waitlisted";
+        const waitlistedCount = activeBookings.filter(b => b.status === 'waitlisted').length;
+        waitlistPosition = waitlistedCount + 1;
+      }
 
       const booking = await storage.createBooking({
         eventId,
         userId: req.user!.id,
         status,
+        holdExpiresAt,
+        waitlistPosition,
       });
+
+      // Update waitlist positions for this event
+      if (status === 'waitlisted') {
+        await storage.updateWaitlistPositions(eventId);
+      }
 
       res.status(201).json(booking);
     } catch (error: any) {
       res.status(400).json({ error: error.message || "Failed to create booking" });
+    }
+  });
+
+  // Confirm a hold booking
+  app.post("/api/bookings/:id/confirm", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const booking = await storage.getBooking(req.params.id);
+
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+
+      if (booking.userId !== req.user!.id) {
+        return res.status(403).json({ error: "You can only confirm your own bookings" });
+      }
+
+      if (booking.status !== "hold") {
+        return res.status(400).json({ error: "Only hold bookings can be confirmed" });
+      }
+
+      // Check if hold has expired
+      if (booking.holdExpiresAt && new Date(booking.holdExpiresAt) < new Date()) {
+        await storage.deleteBooking(booking.id);
+        return res.status(400).json({ error: "Hold has expired. Please book again." });
+      }
+
+      const updated = await storage.updateBooking(booking.id, {
+        status: "confirmed",
+        holdExpiresAt: null,
+      });
+
+      res.json(updated);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || "Failed to confirm booking" });
+    }
+  });
+
+  // Reschedule booking to a different event
+  app.post("/api/bookings/:id/reschedule", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const { newEventId } = req.body;
+      const booking = await storage.getBooking(req.params.id);
+
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+
+      if (booking.userId !== req.user!.id) {
+        return res.status(403).json({ error: "You can only reschedule your own bookings" });
+      }
+
+      if (booking.status !== "confirmed" && booking.status !== "waitlisted") {
+        return res.status(400).json({ error: "Only confirmed or waitlisted bookings can be rescheduled" });
+      }
+
+      const newEvent = await storage.getEvent(newEventId);
+      if (!newEvent) {
+        return res.status(404).json({ error: "New event not found" });
+      }
+
+      // Check department validation
+      if (newEvent.department !== req.user!.department) {
+        return res.status(403).json({
+          error: `This event is only available for ${newEvent.department} students`,
+        });
+      }
+
+      // Check if already booked for new event
+      const existingBooking = await storage.getUserBookingForEvent(req.user!.id, newEventId);
+      if (existingBooking) {
+        return res.status(400).json({ error: "You already have a booking for the new event" });
+      }
+
+      const oldEventId = booking.eventId;
+      const wasConfirmed = booking.status === "confirmed";
+
+      // Delete old booking
+      await storage.deleteBooking(req.params.id);
+
+      // If old booking was confirmed, promote first waitlisted
+      if (wasConfirmed) {
+        const event = await storage.getEvent(oldEventId);
+        if (event) {
+          const eventBookings = await storage.getBookingsByEvent(oldEventId);
+          const confirmedCount = eventBookings.filter(b => b.status === "confirmed").length;
+          const effectiveCapacity = event.allowOverbooking 
+            ? Math.ceil(event.capacity * OVERBOOKING_MULTIPLIER) 
+            : event.capacity;
+
+          if (confirmedCount < effectiveCapacity) {
+            const waitlisted = eventBookings
+              .filter(b => b.status === "waitlisted")
+              .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+
+            if (waitlisted.length > 0) {
+              await storage.updateBookingStatus(waitlisted[0].id, "confirmed");
+              await storage.updateWaitlistPositions(oldEventId);
+            }
+          }
+        }
+      } else {
+        // Update waitlist positions for old event
+        await storage.updateWaitlistPositions(oldEventId);
+      }
+
+      // Create new booking
+      const newEventBookings = await storage.getBookingsByEvent(newEventId);
+      const newConfirmedCount = newEventBookings.filter(b => 
+        b.status === "confirmed" || b.status === "hold"
+      ).length;
+      const newEffectiveCapacity = newEvent.allowOverbooking 
+        ? Math.ceil(newEvent.capacity * OVERBOOKING_MULTIPLIER) 
+        : newEvent.capacity;
+
+      const newStatus = newConfirmedCount < newEffectiveCapacity ? "confirmed" : "waitlisted";
+      const waitlistPosition = newStatus === "waitlisted" 
+        ? newEventBookings.filter(b => b.status === 'waitlisted').length + 1 
+        : null;
+
+      const newBooking = await storage.createBooking({
+        eventId: newEventId,
+        userId: req.user!.id,
+        status: newStatus,
+        waitlistPosition,
+      });
+
+      if (newStatus === 'waitlisted') {
+        await storage.updateWaitlistPositions(newEventId);
+      }
+
+      res.json({ 
+        success: true, 
+        booking: newBooking,
+        message: newStatus === "confirmed" 
+          ? "Successfully rescheduled and confirmed" 
+          : "Rescheduled to waitlist"
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || "Failed to reschedule booking" });
+    }
+  });
+
+  // Get waitlist position for a booking
+  app.get("/api/bookings/:id/waitlist-position", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const booking = await storage.getBooking(req.params.id);
+
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+
+      if (booking.userId !== req.user!.id) {
+        return res.status(403).json({ error: "You can only view your own bookings" });
+      }
+
+      if (booking.status !== "waitlisted") {
+        return res.status(400).json({ error: "This booking is not on the waitlist" });
+      }
+
+      const position = await storage.getWaitlistPosition(booking.eventId, booking.id);
+      res.json({ position, bookingId: booking.id, eventId: booking.eventId });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || "Failed to get waitlist position" });
     }
   });
 
@@ -397,15 +589,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ error: "You can only cancel your own bookings" });
       }
 
-      const wasConfirmed = booking.status === "confirmed";
+      const wasConfirmed = booking.status === "confirmed" || booking.status === "hold";
+      const wasWaitlisted = booking.status === "waitlisted";
+      const eventId = booking.eventId;
+      
       await storage.deleteBooking(req.params.id);
 
-      // If cancelled booking was confirmed, promote first waitlisted student
-      // but only if we're under the effective capacity
+      // If cancelled booking was confirmed/hold, promote first waitlisted student
       if (wasConfirmed) {
-        const event = await storage.getEvent(booking.eventId);
+        const event = await storage.getEvent(eventId);
         if (event) {
-          const eventBookings = await storage.getBookingsByEvent(booking.eventId);
+          const eventBookings = await storage.getBookingsByEvent(eventId);
           const confirmedCount = eventBookings.filter(
             (b) => b.status === "confirmed"
           ).length;
@@ -423,14 +617,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
             if (waitlisted.length > 0) {
               await storage.updateBookingStatus(waitlisted[0].id, "confirmed");
+              // Update waitlist positions after promotion
+              await storage.updateWaitlistPositions(eventId);
             }
           }
         }
       }
 
+      // Update waitlist positions if the cancelled booking was waitlisted
+      if (wasWaitlisted) {
+        await storage.updateWaitlistPositions(eventId);
+      }
+
       res.json({ success: true });
     } catch (error: any) {
       res.status(500).json({ error: error.message || "Failed to cancel booking" });
+    }
+  });
+
+  // Cleanup expired holds (called periodically or on-demand)
+  app.post("/api/bookings/cleanup-expired", async (req, res) => {
+    try {
+      const expiredHolds = await storage.getExpiredHolds();
+      const eventIds = new Set<string>();
+      
+      for (const hold of expiredHolds) {
+        eventIds.add(hold.eventId);
+        await storage.deleteBooking(hold.id);
+      }
+
+      // Promote waitlisted for each affected event
+      for (const eventId of Array.from(eventIds)) {
+        const event = await storage.getEvent(eventId);
+        if (event) {
+          const eventBookings = await storage.getBookingsByEvent(eventId);
+          const confirmedCount = eventBookings.filter(b => b.status === "confirmed").length;
+          const effectiveCapacity = event.allowOverbooking 
+            ? Math.ceil(event.capacity * OVERBOOKING_MULTIPLIER) 
+            : event.capacity;
+
+          if (confirmedCount < effectiveCapacity) {
+            const waitlisted = eventBookings
+              .filter(b => b.status === "waitlisted")
+              .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+
+            const slotsAvailable = effectiveCapacity - confirmedCount;
+            for (let i = 0; i < Math.min(slotsAvailable, waitlisted.length); i++) {
+              await storage.updateBookingStatus(waitlisted[i].id, "confirmed");
+            }
+            await storage.updateWaitlistPositions(eventId);
+          }
+        }
+      }
+
+      res.json({ success: true, expiredCount: expiredHolds.length });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || "Failed to cleanup expired holds" });
     }
   });
 

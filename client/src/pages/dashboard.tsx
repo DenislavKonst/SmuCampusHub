@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useLocation, Link } from 'wouter';
+import { useState, useEffect } from 'react';
 import {
   Calendar,
   Clock,
@@ -11,6 +12,9 @@ import {
   Trash2,
   Users,
   CalendarPlus,
+  RefreshCw,
+  Timer,
+  ArrowRight,
 } from 'lucide-react';
 import { Navigation } from '@/components/navigation';
 import { Button } from '@/components/ui/button';
@@ -28,6 +32,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/lib/auth';
 import { apiRequest, queryClient } from '@/lib/queryClient';
@@ -37,9 +57,17 @@ export default function Dashboard() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const [rescheduleDialogOpen, setRescheduleDialogOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<BookingWithDetails | null>(null);
+  const [selectedNewEventId, setSelectedNewEventId] = useState<string>('');
 
   const { data: bookings, isLoading: bookingsLoading } = useQuery<BookingWithDetails[]>({
     queryKey: ['/api/bookings/user'],
+    enabled: !!user && user.role === 'student',
+  });
+
+  const { data: allEvents } = useQuery<EventWithStats[]>({
+    queryKey: ['/api/events'],
     enabled: !!user && user.role === 'student',
   });
 
@@ -64,6 +92,50 @@ export default function Dashboard() {
         variant: 'destructive',
         title: 'Cancellation failed',
         description: error.message || 'Unable to cancel booking.',
+      });
+    },
+  });
+
+  const confirmHoldMutation = useMutation({
+    mutationFn: async (bookingId: string) => {
+      return apiRequest('POST', `/api/bookings/${bookingId}/confirm`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/bookings/user'] });
+      toast({
+        title: 'Booking confirmed',
+        description: 'Your booking has been confirmed successfully.',
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        variant: 'destructive',
+        title: 'Confirmation failed',
+        description: error.message || 'Unable to confirm booking.',
+      });
+    },
+  });
+
+  const rescheduleMutation = useMutation({
+    mutationFn: async ({ bookingId, newEventId }: { bookingId: string; newEventId: string }) => {
+      return apiRequest('POST', `/api/bookings/${bookingId}/reschedule`, { newEventId });
+    },
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/bookings/user'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/events'] });
+      setRescheduleDialogOpen(false);
+      setSelectedBooking(null);
+      setSelectedNewEventId('');
+      toast({
+        title: 'Booking rescheduled',
+        description: data.message || 'Your booking has been rescheduled successfully.',
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        variant: 'destructive',
+        title: 'Reschedule failed',
+        description: error.message || 'Unable to reschedule booking.',
       });
     },
   });
@@ -224,7 +296,54 @@ export default function Dashboard() {
     return null;
   }
 
+  // Helper function to get available events for rescheduling
+  const getAvailableEventsForReschedule = (currentBooking: BookingWithDetails) => {
+    if (!allEvents) return [];
+    const bookedEventIds = bookings?.map(b => b.eventId) || [];
+    return allEvents.filter(event => 
+      event.id !== currentBooking.eventId && 
+      !bookedEventIds.includes(event.id) &&
+      event.department === user?.department &&
+      new Date(event.date) >= new Date()
+    );
+  };
+
+  // Hold countdown timer component
+  const HoldCountdown = ({ expiresAt }: { expiresAt: string }) => {
+    const [timeLeft, setTimeLeft] = useState('');
+    
+    useEffect(() => {
+      const updateCountdown = () => {
+        const now = new Date();
+        const expires = new Date(expiresAt);
+        const diff = expires.getTime() - now.getTime();
+        
+        if (diff <= 0) {
+          setTimeLeft('Expired');
+          queryClient.invalidateQueries({ queryKey: ['/api/bookings/user'] });
+          return;
+        }
+        
+        const minutes = Math.floor(diff / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+        setTimeLeft(`${minutes}:${seconds.toString().padStart(2, '0')}`);
+      };
+      
+      updateCountdown();
+      const interval = setInterval(updateCountdown, 1000);
+      return () => clearInterval(interval);
+    }, [expiresAt]);
+    
+    return (
+      <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400">
+        <Timer className="h-3 w-3" />
+        {timeLeft}
+      </span>
+    );
+  };
+
   if (user.role === 'student') {
+    const holdBookings = bookings?.filter((b) => b.status === 'hold') || [];
     const confirmedBookings = bookings?.filter((b) => b.status === 'confirmed') || [];
     const waitlistedBookings = bookings?.filter((b) => b.status === 'waitlisted') || [];
 
@@ -234,11 +353,61 @@ export default function Dashboard() {
 
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           <div className="mb-8">
-            <h1 className="font-heading text-4xl font-bold mb-2">My Dashboard</h1>
+            <h1 className="font-heading text-4xl font-bold mb-2" data-testid="text-dashboard-title">My Dashboard</h1>
             <p className="text-muted-foreground">
               View and manage your event bookings
             </p>
           </div>
+
+          {/* Reschedule Dialog */}
+          <Dialog open={rescheduleDialogOpen} onOpenChange={setRescheduleDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Reschedule Booking</DialogTitle>
+                <DialogDescription>
+                  Select a new event to reschedule your booking for "{selectedBooking?.event.title}"
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4">
+                <Select value={selectedNewEventId} onValueChange={setSelectedNewEventId}>
+                  <SelectTrigger data-testid="select-reschedule-event">
+                    <SelectValue placeholder="Select an event" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {selectedBooking && getAvailableEventsForReschedule(selectedBooking).map(event => (
+                      <SelectItem key={event.id} value={event.id}>
+                        <div className="flex flex-col">
+                          <span>{event.title}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(event.date).toLocaleDateString()} - {event.remainingSlots} spots left
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setRescheduleDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => selectedBooking && rescheduleMutation.mutate({
+                    bookingId: selectedBooking.id,
+                    newEventId: selectedNewEventId
+                  })}
+                  disabled={!selectedNewEventId || rescheduleMutation.isPending}
+                  data-testid="button-confirm-reschedule"
+                >
+                  {rescheduleMutation.isPending ? (
+                    <><Loader2 className="h-4 w-4 animate-spin mr-2" />Rescheduling...</>
+                  ) : (
+                    <>Reschedule</>
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
           {bookingsLoading ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -251,7 +420,79 @@ export default function Dashboard() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-8">
+              {/* Hold Bookings - Requires confirmation */}
+              {holdBookings.length > 0 && (
+                <div>
+                  <h2 className="font-heading text-2xl font-semibold mb-4 text-amber-600 dark:text-amber-400">
+                    Pending Confirmation ({holdBookings.length})
+                  </h2>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {holdBookings.map((booking) => (
+                      <Card key={booking.id} className="border-amber-500/50 bg-amber-50/50 dark:bg-amber-900/10" data-testid={`card-hold-${booking.id}`}>
+                        <CardHeader>
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                              <CardTitle className="font-heading text-xl mb-2">
+                                {booking.event.title}
+                              </CardTitle>
+                              <CardDescription className="line-clamp-2">
+                                {booking.event.description}
+                              </CardDescription>
+                            </div>
+                            <div className="flex flex-col items-end gap-1 shrink-0">
+                              <Badge className="bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20">
+                                Hold
+                              </Badge>
+                              {booking.holdExpiresAt && (
+                                <HoldCountdown expiresAt={booking.holdExpiresAt.toString()} />
+                              )}
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Calendar className="h-4 w-4" aria-hidden="true" />
+                            <span>{new Date(booking.event.date).toLocaleDateString()}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Clock className="h-4 w-4" aria-hidden="true" />
+                            <span>{booking.event.startTime} - {booking.event.endTime}</span>
+                          </div>
+                          <p className="text-xs text-amber-600 dark:text-amber-400 font-medium pt-2 border-t">
+                            Confirm your booking before the hold expires
+                          </p>
+                          <div className="flex flex-wrap gap-2 pt-2">
+                            <Button
+                              className="flex-1"
+                              onClick={() => confirmHoldMutation.mutate(booking.id)}
+                              disabled={confirmHoldMutation.isPending}
+                              data-testid={`button-confirm-hold-${booking.id}`}
+                            >
+                              {confirmHoldMutation.isPending ? (
+                                <><Loader2 className="h-4 w-4 animate-spin mr-2" />Confirming...</>
+                              ) : (
+                                <>Confirm Booking</>
+                              )}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              className="flex-1"
+                              onClick={() => cancelMutation.mutate(booking.id)}
+                              disabled={cancelMutation.isPending}
+                              data-testid={`button-cancel-hold-${booking.id}`}
+                            >
+                              Release Hold
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <h2 className="font-heading text-2xl font-semibold mb-4">
                   Confirmed Bookings ({confirmedBookings.length})
@@ -302,6 +543,18 @@ export default function Dashboard() {
                             >
                               <CalendarPlus className="h-4 w-4 mr-2" />
                               Add to Calendar
+                            </Button>
+                            <Button
+                              variant="outline"
+                              className="flex-1"
+                              onClick={() => {
+                                setSelectedBooking(booking);
+                                setRescheduleDialogOpen(true);
+                              }}
+                              data-testid={`button-reschedule-${booking.id}`}
+                            >
+                              <RefreshCw className="h-4 w-4 mr-2" />
+                              Reschedule
                             </Button>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
@@ -371,22 +624,31 @@ export default function Dashboard() {
                                 {booking.event.description}
                               </CardDescription>
                             </div>
-                            <Badge className="bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20 shrink-0">
-                              Waitlisted
-                            </Badge>
+                            <div className="flex flex-col items-end gap-1 shrink-0">
+                              <Badge className="bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20">
+                                Waitlisted
+                              </Badge>
+                              {booking.waitlistPosition && (
+                                <span className="text-xs text-muted-foreground" data-testid={`text-waitlist-position-${booking.id}`}>
+                                  Position #{booking.waitlistPosition}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </CardHeader>
                         <CardContent className="space-y-3">
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Calendar className="h-4 w-4" />
-                            {new Date(booking.event.date).toLocaleDateString()}
+                            <Calendar className="h-4 w-4" aria-hidden="true" />
+                            <span>{new Date(booking.event.date).toLocaleDateString()}</span>
                           </div>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Clock className="h-4 w-4" />
-                            {booking.event.startTime} - {booking.event.endTime}
+                            <Clock className="h-4 w-4" aria-hidden="true" />
+                            <span>{booking.event.startTime} - {booking.event.endTime}</span>
                           </div>
                           <p className="text-xs text-muted-foreground pt-2 border-t">
-                            You'll be automatically promoted if a spot opens up
+                            {booking.waitlistPosition === 1 
+                              ? "You're next in line! You'll be promoted when a spot opens."
+                              : "You'll be automatically promoted if a spot opens up"}
                           </p>
                           <div className="flex gap-2">
                             <Link href={`/events/${booking.event.id}`} className="flex-1">
@@ -418,6 +680,7 @@ export default function Dashboard() {
                     </p>
                   </Card>
                 )}
+              </div>
               </div>
             </div>
           )}

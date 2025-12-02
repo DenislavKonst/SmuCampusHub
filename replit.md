@@ -16,9 +16,13 @@ SMUCampusHub is a full-stack university event management system designed to stre
 - **Staff**: Create/edit events, set capacity limits, enable overbooking (+5% for critical events), export attendee data to CSV
 
 ### Booking Lifecycle
-- Automatic status determination: confirmed (if slots available) or waitlisted (if full)
-- Automatic waitlist promotion when slots become available after cancellation
-- Department validation: students can only book events matching their department
+- **Hold System**: Initial bookings are placed on hold for 15 minutes, requiring confirmation before becoming final
+- **Hold Confirmation**: Students can confirm or release holds from their dashboard with countdown timer
+- **Automatic Status**: After confirmation, bookings are confirmed (if slots available) or waitlisted (if full)
+- **Waitlist Promotion**: Automatic promotion from waitlist upon cancellation (with position tracking)
+- **Reschedule**: Confirmed bookings can be rescheduled to alternative events in the same department
+- **Department Validation**: Students can only book events matching their department
+- **Expired Hold Cleanup**: Backend cron-style endpoint to clean up expired holds and promote waitlisted users
 
 ### Calendar Integration
 - "Add to Calendar" button for confirmed bookings (downloads .ics file compatible with Google Calendar, Outlook, Apple Calendar)
@@ -58,7 +62,7 @@ Preferred communication style: Simple, everyday language.
 -   **Schema**:
     -   `Users`: Stores user details, role, and department.
     -   `Events`: Stores event details including capacity and instructor.
-    -   `Bookings`: Links users to events, tracks booking status (confirmed/waitlisted).
+    -   `Bookings`: Links users to events, tracks booking status (hold/confirmed/waitlisted), holdExpiresAt timestamp, and waitlistPosition.
 -   **Relationships**: One-to-many between Users and Events (instructor), Events and Bookings, and Users and Bookings.
 -   **Migration**: Drizzle Kit manages migrations, with an idempotent seed script for initial data.
 

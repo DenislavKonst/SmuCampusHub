@@ -48,6 +48,10 @@ export interface IStorage {
   createBooking(booking: InsertBooking): Promise<Booking>;
   deleteBooking(id: string): Promise<boolean>;
   updateBookingStatus(id: string, status: string): Promise<Booking | undefined>;
+  updateBooking(id: string, updates: Partial<InsertBooking>): Promise<Booking | undefined>;
+  getExpiredHolds(): Promise<Booking[]>;
+  getWaitlistPosition(eventId: string, bookingId: string): Promise<number>;
+  updateWaitlistPositions(eventId: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -334,6 +338,7 @@ export class MemStorage implements IStorage {
     const event: Event = {
       ...insertEvent,
       id,
+      allowOverbooking: insertEvent.allowOverbooking ?? 0,
       createdAt: new Date(),
     };
     this.events.set(id, event);
@@ -421,6 +426,8 @@ export class MemStorage implements IStorage {
     const booking: Booking = {
       ...insertBooking,
       id,
+      holdExpiresAt: insertBooking.holdExpiresAt ?? null,
+      waitlistPosition: insertBooking.waitlistPosition ?? null,
       createdAt: new Date(),
     };
     this.bookings.set(id, booking);
@@ -441,6 +448,44 @@ export class MemStorage implements IStorage {
     };
     this.bookings.set(id, updated);
     return updated;
+  }
+
+  async updateBooking(id: string, updates: Partial<InsertBooking>): Promise<Booking | undefined> {
+    const booking = this.bookings.get(id);
+    if (!booking) return undefined;
+
+    const updated: Booking = {
+      ...booking,
+      ...updates,
+    };
+    this.bookings.set(id, updated);
+    return updated;
+  }
+
+  async getExpiredHolds(): Promise<Booking[]> {
+    const now = new Date();
+    return Array.from(this.bookings.values()).filter(
+      (b) => b.status === 'hold' && b.holdExpiresAt && new Date(b.holdExpiresAt) < now
+    );
+  }
+
+  async getWaitlistPosition(eventId: string, bookingId: string): Promise<number> {
+    const waitlisted = Array.from(this.bookings.values())
+      .filter((b) => b.eventId === eventId && b.status === 'waitlisted')
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+    const index = waitlisted.findIndex((b) => b.id === bookingId);
+    return index === -1 ? 0 : index + 1;
+  }
+
+  async updateWaitlistPositions(eventId: string): Promise<void> {
+    const waitlisted = Array.from(this.bookings.values())
+      .filter((b) => b.eventId === eventId && b.status === 'waitlisted')
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+    
+    waitlisted.forEach((booking, index) => {
+      const updated = { ...booking, waitlistPosition: index + 1 };
+      this.bookings.set(booking.id, updated);
+    });
   }
 }
 
@@ -612,6 +657,48 @@ export class DatabaseStorage implements IStorage {
       .where(eq(bookings.id, id))
       .returning();
     return updated || undefined;
+  }
+
+  async updateBooking(id: string, updates: Partial<InsertBooking>): Promise<Booking | undefined> {
+    const [updated] = await db
+      .update(bookings)
+      .set(updates)
+      .where(eq(bookings.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async getExpiredHolds(): Promise<Booking[]> {
+    const now = new Date();
+    const allBookings = await db.select().from(bookings).where(eq(bookings.status, 'hold'));
+    return allBookings.filter(b => b.holdExpiresAt && new Date(b.holdExpiresAt) < now);
+  }
+
+  async getWaitlistPosition(eventId: string, bookingId: string): Promise<number> {
+    const waitlisted = await db
+      .select()
+      .from(bookings)
+      .where(and(eq(bookings.eventId, eventId), eq(bookings.status, 'waitlisted')));
+    
+    const sorted = waitlisted.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+    const index = sorted.findIndex((b) => b.id === bookingId);
+    return index === -1 ? 0 : index + 1;
+  }
+
+  async updateWaitlistPositions(eventId: string): Promise<void> {
+    const waitlisted = await db
+      .select()
+      .from(bookings)
+      .where(and(eq(bookings.eventId, eventId), eq(bookings.status, 'waitlisted')));
+    
+    const sorted = waitlisted.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+    
+    for (let i = 0; i < sorted.length; i++) {
+      await db
+        .update(bookings)
+        .set({ waitlistPosition: i + 1 })
+        .where(eq(bookings.id, sorted[i].id));
+    }
   }
 }
 
