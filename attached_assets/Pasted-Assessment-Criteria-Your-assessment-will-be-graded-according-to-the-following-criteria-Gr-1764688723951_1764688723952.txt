@@ -1,0 +1,256 @@
+Assessment Criteria 
+ 
+Your assessment will be graded according to the following criteria: 
+ 
+Grading 
+criteria 
+Functionality Documentation Professional Practice 
+Mark band    
+80-100 
+Pass  
+(1st) 
+Expertly design and 
+implement tests across 
+all four quadrants. 
+Demonstrate 
+comprehensive unit, 
+component, API, 
+functional, usability, 
+exploratory, 
+performance, security, 
+and compatibility 
+testing. Automation is 
+effectively applied, 
+with clear justification 
+of coverage, risk, and 
+prioritisation. 
+Test plan and cases are 
+exemplary, clearly 
+structured, and fully 
+executed. Metrics are 
+insightful, evidence is 
+complete, and defects are 
+meticulously tracked with 
+follow-up. Final integrated 
+report synthesises all 
+findings and provides 
+actionable 
+recommendations. 
+Outstanding professional 
+and ethical practice. 
+Reports and artefacts are 
+highly clear, well
+presented, and persuasive. 
+Tool usage is highly 
+effective, reflecting best 
+practice. Ethical 
+considerations are 
+thoroughly addressed, 
+including data handling, 
+impartiality, and 
+automation impact. 
+70-79 
+Pass  
+(1st) 
+Comprehensive design 
+and execution of 
+quadrant-based tests. 
+Strong coverage of 
+unit, component, API, 
+functional, 
+exploratory, and 
+usability tests. Some 
+non-functional testing 
+applied effectively 
+(performance/security
+ /compatibility). 
+Automation is 
+appropriate and well 
+justified. 
+Well-structured test plan, 
+cases, and reports. Defects 
+tracked clearly with 
+supporting evidence. 
+Metrics are accurate and 
+interpreted effectively. 
+Strong ethics and 
+professional 
+communication. Tool usage 
+is competent and 
+purposeful. Reports 
+communicate results 
+clearly and professionally. 
+60-69 
+Pass 
+(2.1) 
+Design and execute 
+tests for core flows 
+and critical logic. 
+Functional, unit, API, 
+and some 
+exploratory/usability 
+testing are applied. 
+Initial non-functional 
+testing attempted. 
+Partial automation 
+implemented. 
+Clear test plan and cases, 
+with adequate execution 
+evidence. Defects are 
+tracked and basic metrics 
+interpreted. 
+Ethical practice is evident. 
+Communication is generally 
+clear. Tool use 
+demonstrates basic 
+proficiency. 
+50-59 
+Pass 
+(2.2) 
+Essential functional 
+and unit/API tests 
+executed. Limited 
+exploratory, usability, 
+Test plan and cases 
+presented; execution 
+evidence exists but is 
+minimal. Defects recorded 
+Basic ethical awareness. 
+Communication 
+understandable but may 
+lack clarity. Some use of 
+CPS6002 Software Testing and Quality Assurance – Assessment Brief 
+and non-functional 
+testing. Basic 
+automation applied. 
+with limited analysis. 
+Metrics are minimal or 
+absent. 
+40-49 
+Pass 
+(3rd)  
+(Threshold) 
+Minimal functional, 
+unit, or API testing. 
+Little exploratory or 
+usability testing. Non
+functional testing 
+largely absent. Ad-hoc 
+automation, if any. 
+Test plan and cases 
+minimally presented. 
+Evidence of execution 
+limited. Defect tracking is 
+basic. Metrics absent. 
+testing tools. 
+Limited professional 
+practice. Organisation and 
+communication weak. Tool 
+use minimal. 
+30-39 
+Fail 
+Very limited testing 
+across quadrants. 
+Major gaps in 
+functional, unit, API, 
+or automation testing. 
+Inadequate documentation. 
+Execution evidence missing 
+or incomplete. Defect 
+tracking and metrics largely 
+absent. 
+0-29 
+Fail 
+Unable to design or 
+execute basic tests. 
+Fundamentals of test 
+design not 
+demonstrated. 
+Little or no coherent 
+documentation. No credible 
+artefacts or reports 
+produced. 
+Weak professional 
+practice, ethical 
+awareness, and 
+communication. Tool use 
+ineffective. 
+Professional practice and 
+ethical awareness absent. 
+Tool competency not 
+demonstrated. 
+Page 10 / 13 
+CPS6002 Software Testing and Quality Assurance – Assessment Brief 
+Learning Outcomes 
+This assessment will enable students to demonstrate the following learning 
+outcomes as stated in the module outline: 
+[Module Learning Outcome 4]  
+• Apply advanced testing strategies and techniques, considering factors such as 
+test coverage, test prioritisation, risk analysis, as well as legal, social, and 
+ethical considerations, to validate and verify software functionality. 
+How is this learning outcome addressed?  
+Students plan and execute a risk-aware testing campaign across the testing 
+quadrants: unit, component, API; acceptance and functional; usability and 
+exploratory; performance, security and compatibility. They justify coverage and 
+prioritisation choices, perform validation and verification activities, and reflect on 
+legal, social, and ethical aspects within the test plan and report. 
+[Module Learning Outcome 5]  
+• Efficiently use industry-standard testing frameworks and tools for test 
+automation, enhancing testing efficiency and accuracy while showcasing best 
+practices. 
+How is this learning outcome addressed?  
+The assessment requires appropriate use of test automation and tools on suitable 
+parts of the system (e.g. repeatable functional and/or API checks), producing 
+readable reports and using results to inform further testing: directly reflecting the 
+syllabus focus on test automation and appropriate tools. 
+Page 11 / 13 
+CPS6002 Software Testing and Quality Assurance – Assessment Brief 
+[Module Learning Outcome 6]  
+• Demonstrate effective project management skills in software testing 
+projects, including planning, estimation, and progress tracking, ensuring 
+timely and successful completion of testing activities. 
+How is this learning outcome addressed?  
+Students produce a concise test plan with scope and estimation, schedule testing 
+activities, track execution and defects. They provide regular progress evidence in 
+their artefacts, aligning with test planning and estimation and test execution with 
+reporting in the syllabus and the multi-week project format. 
+[Module Learning Outcome 7]  
+• Communicate and present testing results, along with well-founded 
+recommendations for enhancing software quality, through comprehensive 
+written reports and articulate presentations. 
+How is this learning outcome addressed?  
+The assessment culminates in a clear test report that explains outcomes, defects, 
+risks, and recommendations, using appropriate test metrics and performance 
+tracking. Students also present findings to stakeholders which matching the syllabus 
+emphasis on test reporting and communicating results. 
+Page 12 / 13 
+CPS6002 Software Testing and Quality Assurance – Assessment Brief 
+Regulations, Policies, and Guidelines 
+Guidance for online submissions 
+https://www.stmarys.ac.uk/policies/online-submissions.aspx 
+Academic Misconduct 
+Any submission must be students’ own work and, where facts or ideas have been 
+used from other sources, these sources must be appropriately referenced. Please 
+find a link to the academic misconduct policy below: 
+https://www.stmarys.ac.uk/policies/academic-regulations.aspx 
+Ethics Policy 
+The work being carried out by students must be in compliance with the Ethics Policy. 
+Where there is an ethical issue, as specified within the Ethics Policy, then students 
+will need ethical approval prior to the start of the project. Please find a link to the 
+ethics policy below: 
+https://www.stmarys.ac.uk/research/students/ethical-review-process.aspx 
+Extenuating Circumstances 
+The University's Extenuating Circumstances procedure helps students facing 
+challenges in assessment submission. To request an extension or deferment, submit 
+an EC application with evidence. Approved cases will not incur academic penalties. 
+For longer-term issues, contact Student Services. Please find a link to the EC policy 
+below: 
+https://www.stmarys.ac.uk/policies/extenuating-circumstances.aspx 
+Reassessment 
+If a student fails to meet the assessment criteria, they may be eligible for a 
+reassessment. The reassessment will follow the same guidelines as the original 
+assessment, requiring the student to reattempt the tasks outlined. Students should 
+review any feedback provided and make improvements to meet the expected 
+learning outcomes. In case of reassessment, it is important to consult with the 
+module convenor for clarity on the areas of improvement and ensure compliance 
+with submission deadlines and regulations.
