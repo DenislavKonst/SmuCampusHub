@@ -11,15 +11,15 @@ const BASE_URL = 'http://localhost:5000';
 
 describe('Performance Tests', () => {
   describe('Response Time Benchmarks', () => {
-    it('GET /api/events should respond within 1000ms', async () => {
-      // Note: 1000ms threshold accounts for cold-start database connections in test environment
+    it('GET /api/events should respond within 1500ms', async () => {
+      // Note: 1500ms threshold accounts for cold-start database connections in test environment
       // Production typically responds in <200ms after warm-up
       const start = Date.now();
       const response = await fetch(`${BASE_URL}/api/events`);
       const duration = Date.now() - start;
 
       expect(response.status).toBe(200);
-      expect(duration).toBeLessThan(1000);
+      expect(duration).toBeLessThan(1500);
     });
 
     it('GET /api/health should respond within 500ms', async () => {

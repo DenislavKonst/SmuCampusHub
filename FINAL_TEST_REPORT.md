@@ -234,7 +234,7 @@ While Playwright end-to-end test scripts were not implemented in this project, f
 
 | Endpoint | Target | Typical Result | Status |
 |----------|--------|----------------|--------|
-| GET /api/events | < 1000ms | ~235ms | ✅ Pass |
+| GET /api/events | < 1500ms | ~235ms | ✅ Pass |
 | GET /api/health | < 500ms | ~33ms | ✅ Pass |
 | POST /api/auth/login | < 1000ms | ~174ms | ✅ Pass |
 

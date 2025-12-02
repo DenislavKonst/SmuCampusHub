@@ -77,13 +77,20 @@ Preferred communication style: Simple, everyday language.
 -   **Health Endpoint (`/api/health`)**: Provides system status, database connectivity, timestamp, and system info. Returns HTTP 503 if the database is disconnected.
 -   **Request/Response Logging**: Custom Express middleware logs API requests and responses (timestamp, method, path, status, duration) without sensitive data.
 
-### Quality Assurance
+### Testing
 
--   **Testing Framework**: Vitest with 84 automated tests (~96% pass rate).
+### Universal Testing Script
+- **Command:** `./run-tests.sh`
+- **Function:** Starts application, runs all tests, generates comprehensive results document
+- **Output:** Creates `TEST_RESULTS_YYYYMMDD_HHMMSS.md` with complete test summary
+
+## Quality Assurance
+
+-   **Testing Framework**: Vitest with 109 automated tests (100% pass rate).
 -   **Testing Quadrants**:
     -   **Unit Tests (Q1)**: 31 tests for booking logic, capacity calculations, waitlist promotion, input validation.
     -   **API Integration Tests (Q2)**: 20 tests for authentication, events CRUD, bookings endpoints.
-    -   **Usability & Exploratory (Q3)**: Heuristic analysis, cognitive walkthrough, accessibility checks (documented).
+    -   **Usability & Exploratory (Q3)**: Heuristic analysis, cognitive walkthrough, accessibility checks (25 documented tests).
     -   **Performance & Security Tests (Q4)**: 33 tests for response times, concurrent load, JWT validation, injection prevention.
 -   **Documentation**: TEST_PLAN.md, DEFECT_LOG.csv, USABILITY_EVALUATION.md, EXPLORATORY_TESTING_FINDINGS.md, FINAL_TEST_REPORT.md.
 

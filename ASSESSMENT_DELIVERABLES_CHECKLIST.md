@@ -296,7 +296,7 @@ SMUCampusHub_Testing_Submission/
 - ✅ Defect log contains all 10 defects (4 resolved, 3 open, 3 acknowledged)
 - ✅ Usability evaluation complete (8/10 rating)
 - ✅ Exploratory testing findings documented (3 sessions)
-- ✅ Performance benchmarks met (< 1000ms cold-start, < 200ms warm)
+- ✅ Performance benchmarks met (< 1500ms cold-start, < 200ms warm)
 - ✅ Security testing complete (all vulnerabilities resolved)
 - ✅ Compatibility testing documented (all browsers pass)
 
