@@ -10,6 +10,7 @@ import {
   Download,
   Trash2,
   Users,
+  CalendarPlus,
 } from 'lucide-react';
 import { Navigation } from '@/components/navigation';
 import { Button } from '@/components/ui/button';
@@ -120,6 +121,104 @@ export default function Dashboard() {
     }
   };
 
+  const handleAddToCalendar = (booking: BookingWithDetails) => {
+    const event = booking.event;
+    const eventDate = new Date(event.date);
+    
+    const parseTime = (timeStr: string): { hours: number; minutes: number } => {
+      const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+      if (!match) return { hours: 9, minutes: 0 };
+      
+      let hours = parseInt(match[1], 10);
+      const minutes = parseInt(match[2], 10);
+      const period = match[3];
+      
+      if (period) {
+        if (period.toUpperCase() === 'PM' && hours !== 12) hours += 12;
+        if (period.toUpperCase() === 'AM' && hours === 12) hours = 0;
+      }
+      
+      return { hours, minutes };
+    };
+
+    const escapeICSText = (text: string): string => {
+      return text
+        .replace(/\\/g, '\\\\')
+        .replace(/,/g, '\\,')
+        .replace(/;/g, '\\;')
+        .replace(/\n/g, '\\n');
+    };
+
+    const foldLine = (line: string): string => {
+      if (line.length <= 75) return line;
+      const result: string[] = [];
+      let remaining = line;
+      result.push(remaining.slice(0, 75));
+      remaining = remaining.slice(75);
+      while (remaining.length > 0) {
+        result.push(' ' + remaining.slice(0, 74));
+        remaining = remaining.slice(74);
+      }
+      return result.join('\r\n');
+    };
+    
+    const startTime = parseTime(event.startTime);
+    const endTime = parseTime(event.endTime);
+    
+    const startDate = new Date(eventDate);
+    startDate.setHours(startTime.hours, startTime.minutes, 0, 0);
+    
+    const endDate = new Date(eventDate);
+    endDate.setHours(endTime.hours, endTime.minutes, 0, 0);
+    
+    const formatICSDate = (date: Date): string => {
+      return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    };
+    
+    const uid = `${booking.id}@smucampushub`;
+    const now = formatICSDate(new Date());
+    
+    const lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//SMUCampusHub//Event Booking//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      `DTSTART:${formatICSDate(startDate)}`,
+      `DTEND:${formatICSDate(endDate)}`,
+      `DTSTAMP:${now}`,
+      `UID:${uid}`,
+      `CREATED:${now}`,
+      foldLine(`DESCRIPTION:${escapeICSText(event.description)}`),
+      `LAST-MODIFIED:${now}`,
+      foldLine(`LOCATION:${escapeICSText(event.location)}`),
+      'SEQUENCE:0',
+      'STATUS:CONFIRMED',
+      foldLine(`SUMMARY:${escapeICSText(event.title)}`),
+      'TRANSP:OPAQUE',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ];
+    
+    const icsContent = lines.join('\r\n');
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${event.title.replace(/[^a-z0-9]/gi, '_')}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+
+    toast({
+      title: 'Calendar file downloaded',
+      description: 'Open the .ics file to add the event to your calendar.',
+    });
+  };
+
   if (!user) {
     setLocation('/login');
     return null;
@@ -189,12 +288,21 @@ export default function Dashboard() {
                             <MapPin className="h-4 w-4" />
                             {booking.event.location}
                           </div>
-                          <div className="flex gap-2 pt-4">
+                          <div className="flex flex-wrap gap-2 pt-4">
                             <Link href={`/events/${booking.event.id}`} className="flex-1" data-testid={`link-view-event-${booking.id}`}>
                               <Button variant="outline" className="w-full">
                                 View Event
                               </Button>
                             </Link>
+                            <Button
+                              variant="outline"
+                              className="flex-1"
+                              onClick={() => handleAddToCalendar(booking)}
+                              data-testid={`button-calendar-${booking.id}`}
+                            >
+                              <CalendarPlus className="h-4 w-4 mr-2" />
+                              Add to Calendar
+                            </Button>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
                                 <Button

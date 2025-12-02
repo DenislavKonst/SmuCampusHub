@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, Calendar, Clock, MapPin, Users, Filter } from 'lucide-react';
+import { Search, Calendar, Clock, MapPin, Users, Filter, CalendarDays } from 'lucide-react';
 import { Link } from 'wouter';
 import { Navigation } from '@/components/navigation';
 import { Button } from '@/components/ui/button';
@@ -23,10 +23,36 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedDepartment, setSelectedDepartment] = useState<string>('all');
+  const [selectedDateRange, setSelectedDateRange] = useState<string>('all');
 
   const { data: events, isLoading } = useQuery<EventWithStats[]>({
     queryKey: ['/api/events'],
   });
+
+  const getDateRange = (range: string): { start: Date; end: Date } | null => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    switch (range) {
+      case 'today': {
+        const end = new Date(today);
+        end.setHours(23, 59, 59, 999);
+        return { start: today, end };
+      }
+      case 'week': {
+        const end = new Date(today);
+        end.setDate(end.getDate() + 7);
+        return { start: today, end };
+      }
+      case 'month': {
+        const end = new Date(today);
+        end.setMonth(end.getMonth() + 1);
+        return { start: today, end };
+      }
+      default:
+        return null;
+    }
+  };
 
   const filteredEvents = events?.filter((event) => {
     const matchesSearch =
@@ -36,7 +62,13 @@ export default function Home() {
     const matchesType = selectedType === 'all' || event.type === selectedType;
     const matchesDepartment =
       selectedDepartment === 'all' || event.department === selectedDepartment;
-    return matchesSearch && matchesType && matchesDepartment;
+    
+    const dateRange = getDateRange(selectedDateRange);
+    const eventDate = new Date(event.date);
+    const matchesDate = !dateRange || 
+      (eventDate >= dateRange.start && eventDate <= dateRange.end);
+    
+    return matchesSearch && matchesType && matchesDepartment && matchesDate;
   });
 
   const getTypeColor = (type: string) => {
@@ -114,12 +146,25 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-wrap gap-4 mb-8 items-center justify-between">
           <h2 className="font-heading text-3xl font-semibold">
-            {selectedType === 'all' && selectedDepartment === 'all'
+            {selectedType === 'all' && selectedDepartment === 'all' && selectedDateRange === 'all'
               ? 'All Events'
               : 'Filtered Events'}
           </h2>
 
           <div className="flex flex-wrap gap-2">
+            <Select value={selectedDateRange} onValueChange={setSelectedDateRange}>
+              <SelectTrigger className="w-[150px]" data-testid="select-date">
+                <CalendarDays className="mr-2 h-4 w-4" />
+                <SelectValue placeholder="Date" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Dates</SelectItem>
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="week">This Week</SelectItem>
+                <SelectItem value="month">This Month</SelectItem>
+              </SelectContent>
+            </Select>
+
             <Select value={selectedType} onValueChange={setSelectedType}>
               <SelectTrigger className="w-[180px]" data-testid="select-type">
                 <Filter className="mr-2 h-4 w-4" />
@@ -240,7 +285,7 @@ export default function Home() {
             <Calendar className="h-16 w-16 text-muted-foreground mb-4" />
             <h3 className="font-heading text-2xl font-semibold mb-2">No events found</h3>
             <p className="text-muted-foreground max-w-md">
-              {searchQuery || selectedType !== 'all' || selectedDepartment !== 'all'
+              {searchQuery || selectedType !== 'all' || selectedDepartment !== 'all' || selectedDateRange !== 'all'
                 ? 'Try adjusting your filters to see more events.'
                 : 'There are no events available at the moment. Check back soon!'}
             </p>

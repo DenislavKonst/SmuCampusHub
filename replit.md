@@ -4,6 +4,30 @@
 
 SMUCampusHub is a full-stack university event management system designed to streamline event discovery and booking for students, and event creation and management for staff. Key features include role-based access control, automated waitlist management, capacity enforcement with optional overbooking, health monitoring, and comprehensive logging. The system is production-ready, utilizing PostgreSQL for persistence, and boasts extensive test coverage to ensure quality and reliability.
 
+## Core Capabilities
+
+### Event Catalogue
+- Browse and search events with filters (date, type, department)
+- Event details page displays remaining capacity and waitlist status
+- Event cards show booking status (Available, Limited, Full - Waitlist)
+
+### Authentication & Roles
+- **Students**: View bookings, manage waitlists, cancel bookings, add confirmed events to calendar (.ics download)
+- **Staff**: Create/edit events, set capacity limits, enable overbooking (+5% for critical events), export attendee data to CSV
+
+### Booking Lifecycle
+- Automatic status determination: confirmed (if slots available) or waitlisted (if full)
+- Automatic waitlist promotion when slots become available after cancellation
+- Department validation: students can only book events matching their department
+
+### Calendar Integration
+- "Add to Calendar" button for confirmed bookings (downloads .ics file compatible with Google Calendar, Outlook, Apple Calendar)
+
+### Future Enhancements (Planned)
+- **Email Notifications**: Automated emails for booking confirmations, cancellations, and waitlist promotions (requires external email service integration like SendGrid/Mailgun)
+- **Calendar Sync**: Real-time calendar synchronization with Google Calendar/Outlook APIs
+- **Push Notifications**: Browser push notifications for waitlist updates
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -51,12 +75,13 @@ Preferred communication style: Simple, everyday language.
 
 ### Quality Assurance
 
--   **Testing Framework**: Vitest + Playwright, 94 automated tests (96.8% pass rate).
+-   **Testing Framework**: Vitest with 84 automated tests (~96% pass rate).
 -   **Testing Quadrants**:
-    -   **Unit & Component**: Extensive tests for booking logic, capacity, waitlist, validation.
-    -   **Functional & API**: Playwright E2E tests for user flows, API integration tests for endpoints.
-    -   **Usability & Exploratory**: Heuristic analysis, cognitive walkthrough, accessibility checks.
-    -   **Performance & Security**: Benchmarks for response times, concurrent load, memory, JWT validation, input validation.
+    -   **Unit Tests (Q1)**: 31 tests for booking logic, capacity calculations, waitlist promotion, input validation.
+    -   **API Integration Tests (Q2)**: 20 tests for authentication, events CRUD, bookings endpoints.
+    -   **Usability & Exploratory (Q3)**: Heuristic analysis, cognitive walkthrough, accessibility checks (documented).
+    -   **Performance & Security Tests (Q4)**: 33 tests for response times, concurrent load, JWT validation, injection prevention.
+-   **Documentation**: TEST_PLAN.md, DEFECT_LOG.csv, USABILITY_EVALUATION.md, EXPLORATORY_TESTING_FINDINGS.md, FINAL_TEST_REPORT.md.
 
 ## External Dependencies
 
