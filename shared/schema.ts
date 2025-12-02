@@ -41,6 +41,11 @@ export const events = pgTable("events", {
 export const insertEventSchema = createInsertSchema(events).omit({
   id: true,
   createdAt: true,
+}).extend({
+  capacity: z.number()
+    .int("Capacity must be a whole number")
+    .min(1, "Capacity must be at least 1")
+    .max(1000, "Capacity cannot exceed 1000"),
 });
 
 export const updateEventSchema = insertEventSchema.partial();

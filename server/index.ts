@@ -4,6 +4,9 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 
+// Security: Disable X-Powered-By header to prevent server technology exposure
+app.disable('x-powered-by');
+
 declare module 'http' {
   interface IncomingMessage {
     rawBody: unknown
