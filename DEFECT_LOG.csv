@@ -7,16 +7,16 @@ DEF-001,JWT tokens identical on successive logins,High,Resolved,2026-01-07,Secur
 DEF-002,Staff event creation test failing with 403,Medium,Resolved,2026-01-07,API Integration Tests,Testing,"1. Login as staff user
 2. Attempt to create event via POST /api/events
 3. Observe 403 Forbidden error",Staff user with valid token should successfully create event (201 status),Test received 403 Forbidden instead of 201 Created,Updated test to use correct staff username 'dr.smith' instead of 'prof_smith' which doesn't exist in database,2026-01-07
-DEF-003,Express version exposed in X-Powered-By header,Low,Open,2026-01-07,Security Tests,HTTP Headers,"1. Make any API request
+DEF-003,Express version exposed in X-Powered-By header,Low,Resolved,2026-01-07,Security Tests,HTTP Headers,"1. Make any API request
 2. Inspect response headers
-3. Check X-Powered-By header",X-Powered-By header should be disabled or not reveal server technology,Header exposes 'Express' framework,"Recommendation: Add app.disable('x-powered-by') in server initialization. Low priority as it's informational only.",Not Resolved
-DEF-004,Input validation allows some invalid capacities,Medium,Open,2026-01-07,Security Tests,Event Creation,"1. Login as staff
+3. Check X-Powered-By header",X-Powered-By header should be disabled or not reveal server technology,Header exposes 'Express' framework,"Added app.disable('x-powered-by') in server/index.ts to prevent server technology exposure",2026-01-08
+DEF-004,Input validation allows some invalid capacities,Medium,Resolved,2026-01-07,Security Tests,Event Creation,"1. Login as staff
 2. Create event with capacity: -1
 3. Create event with capacity: 0
-4. Create event with capacity: 1.5",All invalid capacity values should be rejected with 400 error,Some invalid values accepted (negative numbers not fully validated),"Recommendation: Add comprehensive validation in insertEventSchema using Zod refinements to ensure capacity is positive integer between 1-1000.",Not Resolved
+4. Create event with capacity: 1.5",All invalid capacity values should be rejected with 400 error,Some invalid values accepted (negative numbers not fully validated),"Added Zod validation to insertEventSchema: capacity must be positive integer between 1-1000",2026-01-08
 DEF-005,No explicit logout endpoint,Low,Open,2026-01-07,Security Tests,Authentication,"1. Login successfully
 2. Attempt to logout
-3. No logout endpoint exists",System should provide logout endpoint to invalidate tokens,No logout endpoint available; tokens remain valid until expiration,"Recommendation: Implement token blacklist or JWT revocation strategy. Current stateless JWT approach acceptable for assessment but should be enhanced for production.",Not Resolved
+3. No logout endpoint exists",System should provide logout endpoint to invalidate tokens,No logout endpoint available; tokens remain valid until expiration,"Documented as acceptable for stateless JWT architecture. Client-side logout clears localStorage token.",Not Resolved
 DEF-006,Booking department validation case-sensitive,Low,Acknowledged,2026-01-07,Unit Tests,Booking Logic,"1. Student in 'Computer Science' department
 2. Try to book event in 'computer science' department
 3. Booking rejected due to case mismatch",Department matching should be case-insensitive for better UX,Department validation is strictly case-sensitive,Documented as expected behavior; consistent with database schema. Consider normalization if becomes issue.,Not Applicable
@@ -27,4 +27,4 @@ DEF-008,CSV export performance not tested with large datasets,Low,Open,2026-01-0
 3. Measure time",CSV export should complete within 2 seconds even with large datasets,Only tested with small datasets (< 50 bookings),"Recommendation: Performance test with 500+ bookings. Consider streaming CSV generation for very large exports.",Not Resolved
 DEF-009,No visual regression testing,Low,Acknowledged,2026-01-07,Usability Tests,UI Testing,N/A - Process gap,Automated visual regression tests should catch unintended UI changes,No visual regression testing implemented,"Documented limitation. Recommendation: Consider Percy or Chromatic for visual regression in future iterations. Out of scope for current assessment.",Not Applicable
 DEF-010,Accessibility tests are documentation-only,Medium,Acknowledged,2026-01-07,Accessibility Tests,Testing,"1. Review accessibility test file
-2. All tests use expect(true).toBe(true)",Accessibility tests should use axe-core or similar tool to verify WCAG compliance,Tests only document requirements without automated verification,"Partially addressed: WCAG requirements documented. Recommendation: Integrate @axe-core/playwright for automated accessibility testing in future sprints.",Not Applicable
+2. All tests use expect(true).toBe(true)",Accessibility tests should use axe-core or similar tool to verify WCAG compliance,Tests only document requirements without automated verification,"Partially addressed: WCAG requirements documented with 25 test cases. Recommendation: Integrate @axe-core/playwright for automated accessibility testing in future sprints.",Not Applicable
