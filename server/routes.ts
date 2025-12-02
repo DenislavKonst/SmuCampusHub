@@ -14,6 +14,25 @@ const JWT_SECRET = process.env.SESSION_SECRET || "your-secret-key-change-in-prod
 // Overbooking multiplier - allows +5% additional capacity when enabled
 const OVERBOOKING_MULTIPLIER = 1.05;
 
+// Sanitize user input to prevent XSS attacks
+function sanitizeInput(input: string): string {
+  return input
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+}
+
+// Sanitize all string fields in an object
+function sanitizeEventData(data: any): any {
+  const sanitized = { ...data };
+  if (sanitized.title) sanitized.title = sanitizeInput(sanitized.title);
+  if (sanitized.description) sanitized.description = sanitizeInput(sanitized.description);
+  if (sanitized.location) sanitized.location = sanitizeInput(sanitized.location);
+  return sanitized;
+}
+
 // Middleware to verify JWT token
 interface AuthRequest extends Request {
   user?: {
@@ -197,11 +216,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const eventData = insertEventSchema.parse(req.body);
 
-      // Set instructor info from authenticated user
-      eventData.instructorId = req.user!.id;
-      eventData.instructor = req.user!.fullName;
+      // Sanitize user-provided fields to prevent XSS
+      const sanitizedData = sanitizeEventData(eventData);
 
-      const event = await storage.createEvent(eventData);
+      // Set instructor info from authenticated user
+      sanitizedData.instructorId = req.user!.id;
+      sanitizedData.instructor = req.user!.fullName;
+
+      const event = await storage.createEvent(sanitizedData);
       res.status(201).json(event);
     } catch (error: any) {
       res.status(400).json({ error: error.message || "Failed to create event" });
@@ -223,7 +245,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const eventData = updateEventSchema.parse(req.body);
-      const updated = await storage.updateEvent(req.params.id, eventData);
+      
+      // Sanitize user-provided fields to prevent XSS
+      const sanitizedData = sanitizeEventData(eventData);
+      const updated = await storage.updateEvent(req.params.id, sanitizedData);
 
       res.json(updated);
     } catch (error: any) {
