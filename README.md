@@ -45,10 +45,20 @@ A full-stack web application for managing university events, lectures, labs, and
 
 3. **Configure environment variables**
    
-   Create a `.env` file in the root directory:
+   Copy the example file and fill in your values:
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit `.env` with your database credentials:
    ```bash
    DATABASE_URL=postgresql://username:password@localhost:5432/smucampushub
    SESSION_SECRET=your-secret-key-here
+   ```
+   
+   Generate a secure session secret:
+   ```bash
+   openssl rand -base64 32
    ```
 
 4. **Push database schema**
