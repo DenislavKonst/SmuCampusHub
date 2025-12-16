@@ -41,7 +41,7 @@ This report presents comprehensive testing results for SMUCampusHub across all f
 **Note:** 25 documentation tests in accessibility.test.ts document WCAG requirements.
 
 ### 1.2 Test Environment
-- **Platform:** Replit (Node.js 20.x, PostgreSQL)
+- **Platform:** Node.js 20.x, PostgreSQL
 - **Frontend:** React 18.3, Vite 5.x
 - **Backend:** Express 4.21, TypeScript 5.x
 - **Database:** PostgreSQL with Drizzle ORM

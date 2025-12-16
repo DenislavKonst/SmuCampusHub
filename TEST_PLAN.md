@@ -121,7 +121,7 @@ This test plan outlines the comprehensive testing strategy for SMUCampusHub, a u
 ## 5. Test Environment
 
 ### 5.1 Development Environment
-- **Platform:** Replit (Node.js v20.x, PostgreSQL)
+- **Platform:** Node.js v20.x, PostgreSQL
 - **Frontend:** React 18 + Vite
 - **Backend:** Express.js + TypeScript
 - **Database:** PostgreSQL with Drizzle ORM

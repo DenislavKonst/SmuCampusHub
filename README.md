@@ -33,7 +33,7 @@ A full-stack web application for managing university events, lectures, labs, and
 
 1. **Clone/Open the project** (you're already here!)
 
-2. **Install dependencies** (already installed via Replit)
+2. **Install dependencies**
    ```bash
    npm install
    ```
@@ -44,8 +44,7 @@ A full-stack web application for managing university events, lectures, labs, and
    ```
 
 4. **Access the application**
-   - Open your browser to the preview URL shown in Replit
-   - Or navigate to `http://localhost:5000` if running locally
+   - Navigate to `http://localhost:5000` in your browser
 
 ## 👥 Demo Accounts
 
