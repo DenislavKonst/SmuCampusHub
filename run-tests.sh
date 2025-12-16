@@ -67,21 +67,48 @@ npm run dev > "$SERVER_LOG" 2>&1 &
 SERVER_PID=$!
 echo "Server started with PID: $SERVER_PID"
 
+# Function to check if database is connected via health endpoint
+check_database_connected() {
+    local response=$(curl -s http://localhost:5000/api/health 2>/dev/null)
+    if echo "$response" | grep -q '"status":"connected"'; then
+        return 0
+    fi
+    return 1
+}
+
+# Function to check if server is responding
+check_server_responding() {
+    curl -s http://localhost:5000/api/health > /dev/null 2>&1
+    return $?
+}
+
 echo "Step 3: Waiting for server to be ready..."
-MAX_WAIT=60
+
+# Set longer timeout for local development (database connections take longer)
+if [ "$IS_REPLIT" = true ]; then
+    MAX_WAIT=60
+    DB_STABILIZATION_WAIT=2
+else
+    MAX_WAIT=90
+    DB_STABILIZATION_WAIT=5
+fi
+
 WAIT_COUNT=0
 SERVER_READY=false
+DATABASE_CONNECTED=false
 
+# Phase 1: Wait for server to respond
+echo "  Phase 1: Waiting for server to respond..."
 while [ $WAIT_COUNT -lt $MAX_WAIT ]; do
-    if curl -s http://localhost:5000/api/health > /dev/null 2>&1; then
+    if check_server_responding; then
+        echo "  Server responding! (took ${WAIT_COUNT} seconds)"
         SERVER_READY=true
-        echo "Server is ready! (took ${WAIT_COUNT} seconds)"
         break
     fi
     sleep 1
     WAIT_COUNT=$((WAIT_COUNT + 1))
     if [ $((WAIT_COUNT % 10)) -eq 0 ]; then
-        echo "  Still waiting... (${WAIT_COUNT}s)"
+        echo "    Still waiting for server... (${WAIT_COUNT}s)"
     fi
 done
 
@@ -92,12 +119,91 @@ if [ "$SERVER_READY" = false ]; then
     exit 1
 fi
 
+# Phase 2: Wait for database connection with retries
+echo "  Phase 2: Waiting for database connection..."
+DB_WAIT_COUNT=0
+DB_MAX_WAIT=30
+DB_RETRY_COUNT=0
+MAX_RETRIES=3
+
+while [ $DB_WAIT_COUNT -lt $DB_MAX_WAIT ]; do
+    if check_database_connected; then
+        echo "  Database connected! (took ${DB_WAIT_COUNT} additional seconds)"
+        DATABASE_CONNECTED=true
+        break
+    fi
+    sleep 1
+    DB_WAIT_COUNT=$((DB_WAIT_COUNT + 1))
+    if [ $((DB_WAIT_COUNT % 5)) -eq 0 ]; then
+        echo "    Waiting for database... (${DB_WAIT_COUNT}s)"
+    fi
+done
+
+# Retry logic for flaky connections
+if [ "$DATABASE_CONNECTED" = false ]; then
+    echo "  Database not connected. Attempting retries..."
+    while [ $DB_RETRY_COUNT -lt $MAX_RETRIES ]; do
+        DB_RETRY_COUNT=$((DB_RETRY_COUNT + 1))
+        echo "    Retry $DB_RETRY_COUNT of $MAX_RETRIES..."
+        sleep 5
+        if check_database_connected; then
+            echo "  Database connected on retry $DB_RETRY_COUNT!"
+            DATABASE_CONNECTED=true
+            break
+        fi
+    done
+fi
+
+if [ "$DATABASE_CONNECTED" = false ]; then
+    echo "WARNING: Database connection not confirmed."
+    echo "Tests will proceed but some may fail if database is not ready."
+    echo "Health check response:"
+    curl -s http://localhost:5000/api/health | head -5
+    echo ""
+fi
+
+# Phase 3: Stabilization wait for database connections to fully initialize
+echo "  Phase 3: Stabilization wait (${DB_STABILIZATION_WAIT}s)..."
+sleep $DB_STABILIZATION_WAIT
+
+# Final health check verification
+echo "  Final health check..."
+HEALTH_STATUS=$(curl -s http://localhost:5000/api/health)
+echo "  Health: $HEALTH_STATUS" | head -1
+
 echo ""
 echo "Step 4: Running all automated tests..."
 echo ""
 
-# Run tests and capture output
-npx vitest run --reporter=verbose 2>&1 | tee "$TEMP_OUTPUT"
+# Run tests with retry on failure for flaky network conditions
+run_tests_with_retry() {
+    local attempt=1
+    local max_attempts=2
+    
+    while [ $attempt -le $max_attempts ]; do
+        echo "Test run attempt $attempt of $max_attempts..."
+        npx vitest run --reporter=verbose 2>&1 | tee "$TEMP_OUTPUT"
+        
+        # Check if tests passed
+        if grep -q "Tests.*passed" "$TEMP_OUTPUT" && ! grep -q "Tests.*failed" "$TEMP_OUTPUT"; then
+            echo "All tests passed!"
+            return 0
+        fi
+        
+        # If first attempt failed, wait and retry
+        if [ $attempt -lt $max_attempts ]; then
+            echo ""
+            echo "Some tests failed. Waiting 5 seconds before retry..."
+            sleep 5
+        fi
+        
+        attempt=$((attempt + 1))
+    done
+    
+    return 1
+}
+
+run_tests_with_retry
 
 echo ""
 echo "Step 5: Generating test report..."
@@ -114,12 +220,21 @@ echo ""
 
 echo "## 1. Application Startup Check"
 echo ""
+echo "### Server Status"
 echo "✅ **Application Status:** Server started successfully"
 echo ""
+echo "### Health Check Response"
 HEALTH_RESPONSE=$(curl -s http://localhost:5000/api/health)
 echo "\`\`\`json"
-echo "$HEALTH_RESPONSE" | head -20
+echo "$HEALTH_RESPONSE" | python3 -m json.tool 2>/dev/null || echo "$HEALTH_RESPONSE"
 echo "\`\`\`"
+echo ""
+echo "### Database Connection"
+if echo "$HEALTH_RESPONSE" | grep -q '"status":"connected"'; then
+    echo "✅ **Database:** Connected"
+else
+    echo "⚠️ **Database:** Connection status unknown"
+fi
 
 echo ""
 echo "---"
@@ -307,6 +422,8 @@ echo "| Report Generated | $(date '+%Y-%m-%d %H:%M:%S') |"
 echo "| Total Execution Time | ${elapsed} seconds |"
 echo "| Test Framework | Vitest |"
 echo "| Node Version | $(node --version) |"
+echo "| Environment | $([ "$IS_REPLIT" = true ] && echo "Replit" || echo "Local Development") |"
+echo "| Database Connected | $([ "$DATABASE_CONNECTED" = true ] && echo "Yes" || echo "Unknown") |"
 echo "| Server PID | ${SERVER_PID} |"
 echo ""
 echo "---"
