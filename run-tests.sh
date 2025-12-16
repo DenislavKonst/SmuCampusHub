@@ -7,9 +7,76 @@ echo "=============================================="
 
 OUTPUT_FILE="TEST_RESULTS_$(date '+%Y%m%d_%H%M%S').md"
 TEMP_OUTPUT="/tmp/test_output.txt"
+SERVER_LOG="/tmp/server_startup.log"
+SERVER_PID=""
 
 start_time=$(date +%s)
 
+# Function to cleanup server on exit
+cleanup() {
+    if [ -n "$SERVER_PID" ] && kill -0 "$SERVER_PID" 2>/dev/null; then
+        echo ""
+        echo "Stopping test server (PID: $SERVER_PID)..."
+        kill "$SERVER_PID" 2>/dev/null
+        wait "$SERVER_PID" 2>/dev/null
+        echo "Server stopped."
+    fi
+    # Also kill any orphaned node processes on port 5000
+    pkill -f "node.*server" 2>/dev/null || true
+}
+
+# Set trap to cleanup on script exit
+trap cleanup EXIT
+
+echo ""
+echo "Step 1: Stopping any existing servers..."
+# Kill any existing processes on port 5000
+pkill -f "tsx.*server" 2>/dev/null || true
+pkill -f "node.*vite" 2>/dev/null || true
+lsof -ti:5000 | xargs kill -9 2>/dev/null || true
+sleep 2
+
+echo "Step 2: Starting application server..."
+npm run dev > "$SERVER_LOG" 2>&1 &
+SERVER_PID=$!
+echo "Server started with PID: $SERVER_PID"
+
+echo "Step 3: Waiting for server to be ready..."
+MAX_WAIT=60
+WAIT_COUNT=0
+SERVER_READY=false
+
+while [ $WAIT_COUNT -lt $MAX_WAIT ]; do
+    if curl -s http://localhost:5000/api/health > /dev/null 2>&1; then
+        SERVER_READY=true
+        echo "Server is ready! (took ${WAIT_COUNT} seconds)"
+        break
+    fi
+    sleep 1
+    WAIT_COUNT=$((WAIT_COUNT + 1))
+    if [ $((WAIT_COUNT % 10)) -eq 0 ]; then
+        echo "  Still waiting... (${WAIT_COUNT}s)"
+    fi
+done
+
+if [ "$SERVER_READY" = false ]; then
+    echo "ERROR: Server failed to start within ${MAX_WAIT} seconds"
+    echo "Server log:"
+    tail -50 "$SERVER_LOG"
+    exit 1
+fi
+
+echo ""
+echo "Step 4: Running all automated tests..."
+echo ""
+
+# Run tests and capture output
+npx vitest run --reporter=verbose 2>&1 | tee "$TEMP_OUTPUT"
+
+echo ""
+echo "Step 5: Generating test report..."
+
+# Generate the report
 {
 echo "# SMUCampusHub Test Results Report"
 echo "**Generated:** $(date '+%Y-%m-%d %H:%M:%S')"
@@ -21,23 +88,12 @@ echo ""
 
 echo "## 1. Application Startup Check"
 echo ""
-
-echo "Starting application server..."
-npm run dev > /tmp/server_startup.log 2>&1 &
-SERVER_PID=$!
-
-sleep 5
-
-if curl -s http://localhost:5000/api/health > /dev/null 2>&1; then
-    echo "✅ **Application Status:** Running successfully"
-    echo ""
-    HEALTH_RESPONSE=$(curl -s http://localhost:5000/api/health)
-    echo "\`\`\`json"
-    echo "$HEALTH_RESPONSE" | head -20
-    echo "\`\`\`"
-else
-    echo "⚠️ **Application Status:** Server may still be starting (continuing with tests)"
-fi
+echo "✅ **Application Status:** Server started successfully"
+echo ""
+HEALTH_RESPONSE=$(curl -s http://localhost:5000/api/health)
+echo "\`\`\`json"
+echo "$HEALTH_RESPONSE" | head -20
+echo "\`\`\`"
 
 echo ""
 echo "---"
@@ -46,12 +102,6 @@ echo ""
 echo "## 2. Test Execution Results"
 echo ""
 
-echo "Running all automated tests..."
-echo ""
-
-npx vitest run --reporter=verbose 2>&1 | tee "$TEMP_OUTPUT"
-
-echo ""
 echo "### Raw Test Output"
 echo ""
 echo "\`\`\`"
@@ -86,19 +136,39 @@ echo "| Test File | Status |"
 echo "|-----------|--------|"
 
 if grep -q "booking.logic.test.ts" "$TEMP_OUTPUT"; then
-    echo "| booking.logic.test.ts (Unit Tests) | ✅ Passed |"
+    if grep -q "booking.logic.test.ts.*failed" "$TEMP_OUTPUT"; then
+        echo "| booking.logic.test.ts (Unit Tests) | ❌ Failed |"
+    else
+        echo "| booking.logic.test.ts (Unit Tests) | ✅ Passed |"
+    fi
 fi
 if grep -q "api.integration.test.ts" "$TEMP_OUTPUT"; then
-    echo "| api.integration.test.ts (API Tests) | ✅ Passed |"
+    if grep -q "api.integration.test.ts.*failed" "$TEMP_OUTPUT"; then
+        echo "| api.integration.test.ts (API Tests) | ❌ Failed |"
+    else
+        echo "| api.integration.test.ts (API Tests) | ✅ Passed |"
+    fi
 fi
 if grep -q "performance.test.ts" "$TEMP_OUTPUT"; then
-    echo "| performance.test.ts (Performance Tests) | ✅ Passed |"
+    if grep -q "performance.test.ts.*failed" "$TEMP_OUTPUT"; then
+        echo "| performance.test.ts (Performance Tests) | ❌ Failed |"
+    else
+        echo "| performance.test.ts (Performance Tests) | ✅ Passed |"
+    fi
 fi
 if grep -q "security.test.ts" "$TEMP_OUTPUT"; then
-    echo "| security.test.ts (Security Tests) | ✅ Passed |"
+    if grep -q "security.test.ts.*failed" "$TEMP_OUTPUT"; then
+        echo "| security.test.ts (Security Tests) | ❌ Failed |"
+    else
+        echo "| security.test.ts (Security Tests) | ✅ Passed |"
+    fi
 fi
 if grep -q "accessibility.test.ts" "$TEMP_OUTPUT"; then
-    echo "| accessibility.test.ts (Accessibility Docs) | ✅ Passed |"
+    if grep -q "accessibility.test.ts.*failed" "$TEMP_OUTPUT"; then
+        echo "| accessibility.test.ts (Accessibility Docs) | ❌ Failed |"
+    else
+        echo "| accessibility.test.ts (Accessibility Docs) | ✅ Passed |"
+    fi
 fi
 
 echo ""
@@ -131,7 +201,7 @@ echo ""
 echo "### 4.3 Performance Tests (Quadrant 4)"
 echo "**Focus:** Response times, concurrent load, memory usage"
 echo ""
-echo "- Response time benchmarks (< 1000ms cold-start)"
+echo "- Response time benchmarks (< 2000ms after warm-up)"
 echo "- Concurrent request handling (10-50 simultaneous)"
 echo "- Memory leak detection"
 echo "- CSV export performance"
@@ -211,6 +281,7 @@ echo "| Report Generated | $(date '+%Y-%m-%d %H:%M:%S') |"
 echo "| Total Execution Time | ${elapsed} seconds |"
 echo "| Test Framework | Vitest |"
 echo "| Node Version | $(node --version) |"
+echo "| Server PID | ${SERVER_PID} |"
 echo ""
 echo "---"
 echo ""
@@ -231,7 +302,7 @@ echo ""
 
 echo "Preview of results:"
 echo "---"
-head -50 "$OUTPUT_FILE"
+head -60 "$OUTPUT_FILE"
 echo "..."
 echo ""
 echo "Full report available in: $OUTPUT_FILE"
