@@ -1,0 +1,678 @@
+# SMUCampusHub Test Results Report
+**Generated:** 2025-12-16 12:24:21
+**Environment:** Darwin 23.5.0
+**Node Version:** v23.6.0
+
+---
+
+## 1. Application Startup Check
+
+✅ **Application Status:** Server started successfully
+
+```json
+
+```
+
+---
+
+## 2. Test Execution Results
+
+### Raw Test Output
+
+```
+
+[1m[46m RUN [49m[22m [36mv4.0.10 [39m[90m/Users/ayushmaanprasad/Desktop/CPS6002 - SofTest & QA/Code_Final/SmuCampusHub[39m
+
+[90mstdout[2m | client/src/__tests__/accessibility.test.ts
+[22m[39mTest environment initialized
+
+[90mstdout[2m | server/__tests__/api.integration.test.ts
+[22m[39mTest environment initialized
+
+[90mstdout[2m | server/__tests__/booking.logic.test.ts
+[22m[39mTest environment initialized
+
+[90mstdout[2m | server/__tests__/performance.test.ts
+[22m[39mTest environment initialized
+
+[90mstdout[2m | server/__tests__/security.test.ts
+[22m[39mTest environment initialized
+
+[90mstdout[2m | client/src/__tests__/accessibility.test.ts
+[22m[39mTest environment cleaned up
+
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mWCAG Compliance Checks[2m > [22mshould document color contrast requirements[32m 2[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mWCAG Compliance Checks[2m > [22mshould document heading hierarchy requirement[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mWCAG Compliance Checks[2m > [22mshould document keyboard navigation requirement[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mWCAG Compliance Checks[2m > [22mshould document focus indicators requirement[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mWCAG Compliance Checks[2m > [22mshould document form label requirement[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mScreen Reader Compatibility[2m > [22mshould document ARIA attributes usage[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mScreen Reader Compatibility[2m > [22mshould document semantic HTML requirement[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mScreen Reader Compatibility[2m > [22mshould document alt text requirement for images[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mResponsive Design[2m > [22mshould document mobile viewport requirements[32m 1[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mResponsive Design[2m > [22mshould document tablet viewport requirements[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mResponsive Design[2m > [22mshould document desktop requirements[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mForm Usability[2m > [22mshould document error message requirements[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mForm Usability[2m > [22mshould document input validation feedback[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mForm Usability[2m > [22mshould document autocomplete attributes[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mLoading States & Feedback[2m > [22mshould document loading indicator requirements[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mLoading States & Feedback[2m > [22mshould document success/error feedback[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mNavigation Usability[2m > [22mshould document breadcrumb/back navigation[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mNavigation Usability[2m > [22mshould document search and filter usability[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mData Table Accessibility[2m > [22mshould document table header requirements[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mData Table Accessibility[2m > [22mshould document empty state messaging[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mBrowser Compatibility Matrix[2m > [22mshould document supported browsers[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mBrowser Compatibility Matrix[2m > [22mshould document CSS feature compatibility[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mBrowser Compatibility Matrix[2m > [22mshould document JavaScript feature requirements[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mPerformance & UX[2m > [22mshould document page load performance targets[32m 0[2mms[22m[39m
+[32m✓[39m client/src/__tests__/accessibility.test.ts[2m > [22mAccessibility & Usability Tests[2m > [22mPerformance & UX[2m > [22mshould document interaction responsiveness[32m 0[2mms[22m[39m
+[90mstdout[2m | server/__tests__/booking.logic.test.ts
+[22m[39mTest environment cleaned up
+
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mBooking Capacity Logic[2m > [22mcalculateEffectiveCapacity[2m > [22mshould return base capacity when overbooking is disabled[32m 3[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mBooking Capacity Logic[2m > [22mcalculateEffectiveCapacity[2m > [22mshould return +5% capacity when overbooking is enabled[32m 1[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mBooking Capacity Logic[2m > [22mcalculateEffectiveCapacity[2m > [22mshould handle edge cases correctly[32m 1[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mBooking Capacity Logic[2m > [22mcalculateEffectiveCapacity[2m > [22mshould never reduce capacity with overbooking[32m 1[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mBooking Capacity Logic[2m > [22mdetermineBookingStatus[2m > [22mshould assign confirmed status when slots are available[32m 1[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mBooking Capacity Logic[2m > [22mdetermineBookingStatus[2m > [22mshould assign waitlisted status when at capacity[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mBooking Capacity Logic[2m > [22mdetermineBookingStatus[2m > [22mshould handle boundary conditions correctly[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mBooking Capacity Logic[2m > [22mdetermineBookingStatus[2m > [22mshould work with zero capacity events[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mBooking Capacity Logic[2m > [22mcalculateRemainingSlots[2m > [22mshould calculate correct remaining slots[32m 1[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mBooking Capacity Logic[2m > [22mcalculateRemainingSlots[2m > [22mshould never return negative slots[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mBooking Capacity Logic[2m > [22mcalculateRemainingSlots[2m > [22mshould work with overbooking scenarios[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mWaitlist Promotion Logic[2m > [22mshould return oldest waitlisted booking[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mWaitlist Promotion Logic[2m > [22mshould return null when no waitlisted bookings exist[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mWaitlist Promotion Logic[2m > [22mshould return null for empty booking list[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mWaitlist Promotion Logic[2m > [22mshould handle multiple waitlisted bookings correctly[32m 1[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mWaitlist Promotion Logic[2m > [22mshould maintain FIFO order for simultaneous waitlist additions[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mDepartment Validation Logic[2m > [22mshould allow booking when departments match[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mDepartment Validation Logic[2m > [22mshould block booking when departments do not match[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mDepartment Validation Logic[2m > [22mshould be case-sensitive[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mDepartment Validation Logic[2m > [22mshould handle empty department strings[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mInput Validation Logic[2m > [22mvalidateEventCapacity[2m > [22mshould accept valid capacity values[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mInput Validation Logic[2m > [22mvalidateEventCapacity[2m > [22mshould reject zero or negative capacity[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mInput Validation Logic[2m > [22mvalidateEventCapacity[2m > [22mshould reject capacity exceeding maximum[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mInput Validation Logic[2m > [22mvalidateEventCapacity[2m > [22mshould reject non-integer capacity[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mInput Validation Logic[2m > [22mvalidateEventType[2m > [22mshould accept valid event types[32m 5[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mInput Validation Logic[2m > [22mvalidateEventType[2m > [22mshould reject invalid event types[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mInput Validation Logic[2m > [22mvalidateEventType[2m > [22mshould be case-sensitive[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mInput Validation Logic[2m > [22mvalidateBookingStatus[2m > [22mshould accept valid booking statuses[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mInput Validation Logic[2m > [22mvalidateBookingStatus[2m > [22mshould reject invalid statuses[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mConcurrent Booking Logic[2m > [22mhandleConcurrentBookings[2m > [22mshould handle race condition for last slot[32m 0[2mms[22m[39m
+[32m✓[39m server/__tests__/booking.logic.test.ts[2m > [22mConcurrent Booking Logic[2m > [22mhandleConcurrentBookings[2m > [22mshould correctly transition from last slot to waitlist[32m 0[2mms[22m[39m
+[90mstdout[2m | server/__tests__/api.integration.test.ts
+[22m[39mTest environment cleaned up
+
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mAuthentication Endpoints[2m > [22mPOST /api/auth/login - should authenticate with valid credentials
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mAuthentication Endpoints[2m > [22mPOST /api/auth/login - should reject invalid credentials
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mAuthentication Endpoints[2m > [22mPOST /api/auth/login - should reject non-existent user
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mAuthentication Endpoints[2m > [22mPOST /api/auth/login - should validate required fields
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mEvent Endpoints[2m > [22mGET /api/events - should return list of events
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mEvent Endpoints[2m > [22mGET /api/events/:id - should return single event
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mEvent Endpoints[2m > [22mGET /api/events/:id - should return 404 for non-existent event
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mEvent Endpoints[2m > [22mPOST /api/events - should allow staff to create event
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mEvent Endpoints[2m > [22mPOST /api/events - should reject student creating event
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mBooking Endpoints[2m > [22mGET /api/bookings/user - should require authentication
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mBooking Endpoints[2m > [22mGET /api/bookings/user - should return user bookings
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mBooking Endpoints[2m > [22mPOST /api/bookings - should require authentication
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mHealth Endpoint[2m > [22mGET /api/health - should return health status
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mHealth Endpoint[2m > [22mGET /api/health - should include system information
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mError Handling[2m > [22mshould handle malformed JSON gracefully
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mError Handling[2m > [22mshould handle missing Content-Type header
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mError Handling[2m > [22mshould handle invalid Authorization header format
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mError Handling[2m > [22mshould handle expired/invalid JWT tokens
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mResponse Headers[2m > [22mshould include proper Content-Type headers
+[2m[90m↓[39m[22m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests[2m > [22mResponse Headers[2m > [22mshould not expose sensitive server information
+[31m×[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mAuthentication Security[2m > [22mshould reject requests without authentication token[32m 85[2mms[22m[39m
+[31m → expected 403 to be 401 // Object.is equality[39m
+[32m✓[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mAuthentication Security[2m > [22mshould reject malformed JWT tokens[32m 7[2mms[22m[39m
+[32m✓[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mAuthentication Security[2m > [22mshould not accept expired tokens[32m 1[2mms[22m[39m
+[31m×[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mAuthentication Security[2m > [22mshould not expose password in API responses[32m 6[2mms[22m[39m
+[31m → expected 403 to be 200 // Object.is equality[39m
+[31m×[39m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mResponse Time Benchmarks[2m > [22mGET /api/events should respond within acceptable time[32m 88[2mms[22m[39m
+[31m → expected 403 to be 200 // Object.is equality[39m
+[31m×[39m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mResponse Time Benchmarks[2m > [22mGET /api/health should respond within 500ms[32m 2[2mms[22m[39m
+[31m → expected 403 to be 200 // Object.is equality[39m
+[31m×[39m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mResponse Time Benchmarks[2m > [22mPOST /api/auth/login should respond within 1000ms[32m 4[2mms[22m[39m
+[31m → expected 403 to be 200 // Object.is equality[39m
+[90mstdout[2m | server/__tests__/security.test.ts
+[22m[39mTest environment cleaned up
+
+[31m×[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mAuthentication Security[2m > [22mshould hash passwords (not stored in plain text)[32m 7[2mms[22m[39m
+[31m → Unexpected end of JSON input[39m
+[31m×[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mAuthorization Security[2m > [22mshould prevent students from creating events[32m 2[2mms[22m[39m
+[31m → Unexpected end of JSON input[39m
+[31m×[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mAuthorization Security[2m > [22mshould prevent staff from accessing another staff member's events[32m 2[2mms[22m[39m
+[31m → Unexpected end of JSON input[39m
+[31m×[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mAuthorization Security[2m > [22mshould prevent students from exporting attendee data[32m 2[2mms[22m[39m
+[31m → Unexpected end of JSON input[39m
+[31m×[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mInput Validation & Injection Prevention[2m > [22mshould reject SQL injection attempts in login[32m 4[2mms[22m[39m
+[31m → expected 403 to be 401 // Object.is equality[39m
+[31m×[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mInput Validation & Injection Prevention[2m > [22mshould reject XSS attempts in event creation[32m 2[2mms[22m[39m
+[31m → Unexpected end of JSON input[39m
+[31m×[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mInput Validation & Injection Prevention[2m > [22mshould validate capacity is a positive integer[32m 3[2mms[22m[39m
+[31m → Unexpected end of JSON input[39m
+[31m×[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mInput Validation & Injection Prevention[2m > [22mshould validate required fields are present[32m 2[2mms[22m[39m
+[31m → Unexpected end of JSON input[39m
+[31m×[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mSession Management[2m > [22mshould require new login after logout (if logout implemented)[32m 1[2mms[22m[39m
+[31m → Unexpected end of JSON input[39m
+[31m×[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mSession Management[2m > [22mshould generate unique tokens for each login[32m 3[2mms[22m[39m
+[31m → Unexpected end of JSON input[39m
+[31m×[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mData Protection[2m > [22mshould not leak sensitive information in error messages[32m 1[2mms[22m[39m
+[31m → Unexpected end of JSON input[39m
+[32m✓[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mData Protection[2m > [22mshould not expose internal server paths in errors[32m 1[2mms[22m[39m
+[32m✓[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mData Protection[2m > [22mshould enforce HTTPS in production (headers check)[32m 1[2mms[22m[39m
+[32m✓[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mRate Limiting & DoS Prevention[2m > [22mshould handle rapid repeated requests[32m 38[2mms[22m[39m
+[32m✓[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mRate Limiting & DoS Prevention[2m > [22mshould handle large payload gracefully[32m 1[2mms[22m[39m
+[31m×[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mCross-Site Request Forgery (CSRF) Protection[2m > [22mshould validate content-type header for POST requests[32m 2[2mms[22m[39m
+[31m → expected [ 400, 415 ] to include 403[39m
+[31m×[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mInformation Disclosure[2m > [22mshould not reveal database errors to client[32m 0[2mms[22m[39m
+[31m → Unexpected end of JSON input[39m
+[32m✓[39m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mInformation Disclosure[2m > [22mshould not expose stack traces in production[32m 0[2mms[22m[39m
+[90mstdout[2m | server/__tests__/performance.test.ts
+[22m[39mTest environment cleaned up
+
+[31m×[39m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mConcurrent Request Handling[2m > [22mshould handle 10 concurrent event list requests[32m 28[2mms[22m[39m
+[31m → expected 403 to be 200 // Object.is equality[39m
+[31m×[39m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mConcurrent Request Handling[2m > [22mshould handle 20 concurrent health checks[32m 13[2mms[22m[39m
+[31m → expected 403 to be 200 // Object.is equality[39m
+[32m✓[39m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mConcurrent Request Handling[2m > [22mshould handle mixed concurrent requests[32m 7[2mms[22m[39m
+[31m×[39m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mConcurrent Booking Simulation[2m > [22mshould handle race condition for last event slot[32m 4[2mms[22m[39m
+[31m → Unexpected end of JSON input[39m
+[31m×[39m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mLarge Dataset Performance[2m > [22mshould efficiently handle event listing with statistics[32m 3[2mms[22m[39m
+[31m → Unexpected end of JSON input[39m
+[32m✓[39m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mMemory and Resource Usage[2m > [22mshould not cause memory leaks with repeated requests[32m 26[2mms[22m[39m
+[31m×[39m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mDatabase Query Performance[2m > [22mshould efficiently query events with joins[32m 1[2mms[22m[39m
+[31m → expected 403 to be 200 // Object.is equality[39m
+[31m×[39m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mCSV Export Performance[2m > [22mshould generate CSV export within acceptable time[32m 1[2mms[22m[39m
+[31m → Unexpected end of JSON input[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/api.integration.test.ts[2m > [22mAPI Integration Tests
+[31m[1mSyntaxError[22m: Unexpected end of JSON input[39m
+[36m [2m❯[22m server/__tests__/api.integration.test.ts:[2m23:23[22m[39m
+[90m 21| [39m body: JSON.stringify({ username: 'dr.smith', password: 'password…
+[90m 22| [39m })[33m;[39m
+[90m 23| [39m [35mconst[39m staffData [33m=[39m [35mawait[39m staffResponse[33m.[39m[34mjson[39m()[33m;[39m
+[90m | [39m [31m^[39m
+[90m 24| [39m staffToken [33m=[39m staffData[33m.[39mtoken[33m;[39m
+[90m 25| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/25]⎯[22m[39m
+
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 24 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mResponse Time Benchmarks[2m > [22mGET /api/events should respond within acceptable time
+[31m[1mAssertionError[22m: expected 403 to be 200 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 200[39m
+[31m+ 403[39m
+
+[36m [2m❯[22m server/__tests__/performance.test.ts:[2m27:31[22m[39m
+[90m 25| [39m [35mconst[39m duration [33m=[39m [33mDate[39m[33m.[39m[34mnow[39m() [33m-[39m start[33m;[39m
+[90m 26| [39m
+[90m 27| [39m [34mexpect[39m(response[33m.[39mstatus)[33m.[39m[34mtoBe[39m([34m200[39m)[33m;[39m
+[90m | [39m [31m^[39m
+[90m 28| [39m [34mexpect[39m(duration)[33m.[39m[34mtoBeLessThan[39m([34m2000[39m)[33m;[39m [90m// 2 seconds after warm-up[39m
+[90m 29| [39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mResponse Time Benchmarks[2m > [22mGET /api/health should respond within 500ms
+[31m[1mAssertionError[22m: expected 403 to be 200 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 200[39m
+[31m+ 403[39m
+
+[36m [2m❯[22m server/__tests__/performance.test.ts:[2m37:31[22m[39m
+[90m 35| [39m [35mconst[39m duration [33m=[39m [33mDate[39m[33m.[39m[34mnow[39m() [33m-[39m start[33m;[39m
+[90m 36| [39m
+[90m 37| [39m [34mexpect[39m(response[33m.[39mstatus)[33m.[39m[34mtoBe[39m([34m200[39m)[33m;[39m
+[90m | [39m [31m^[39m
+[90m 38| [39m [34mexpect[39m(duration)[33m.[39m[34mtoBeLessThan[39m([34m500[39m)[33m;[39m
+[90m 39| [39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mResponse Time Benchmarks[2m > [22mPOST /api/auth/login should respond within 1000ms
+[31m[1mAssertionError[22m: expected 403 to be 200 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 200[39m
+[31m+ 403[39m
+
+[36m [2m❯[22m server/__tests__/performance.test.ts:[2m50:31[22m[39m
+[90m 48| [39m [35mconst[39m duration [33m=[39m [33mDate[39m[33m.[39m[34mnow[39m() [33m-[39m start[33m;[39m
+[90m 49| [39m
+[90m 50| [39m [34mexpect[39m(response[33m.[39mstatus)[33m.[39m[34mtoBe[39m([34m200[39m)[33m;[39m
+[90m | [39m [31m^[39m
+[90m 51| [39m [34mexpect[39m(duration)[33m.[39m[34mtoBeLessThan[39m([34m1000[39m)[33m;[39m
+[90m 52| [39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mConcurrent Request Handling[2m > [22mshould handle 10 concurrent event list requests
+[31m[1mAssertionError[22m: expected 403 to be 200 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 200[39m
+[31m+ 403[39m
+
+[36m [2m❯[22m server/__tests__/performance.test.ts:[2m64:33[22m[39m
+[90m 62| [39m
+[90m 63| [39m responses[33m.[39m[34mforEach[39m(response [33m=>[39m {
+[90m 64| [39m [34mexpect[39m(response[33m.[39mstatus)[33m.[39m[34mtoBe[39m([34m200[39m)[33m;[39m
+[90m | [39m [31m^[39m
+[90m 65| [39m })[33m;[39m
+[90m 66| [39m })[33m;[39m
+[90m [2m❯[22m server/__tests__/performance.test.ts:[2m63:17[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mConcurrent Request Handling[2m > [22mshould handle 20 concurrent health checks
+[31m[1mAssertionError[22m: expected 403 to be 200 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 200[39m
+[31m+ 403[39m
+
+[36m [2m❯[22m server/__tests__/performance.test.ts:[2m78:33[22m[39m
+[90m 76| [39m
+[90m 77| [39m responses[33m.[39m[34mforEach[39m(response [33m=>[39m {
+[90m 78| [39m [34mexpect[39m(response[33m.[39mstatus)[33m.[39m[34mtoBe[39m([34m200[39m)[33m;[39m
+[90m | [39m [31m^[39m
+[90m 79| [39m })[33m;[39m
+[90m 80| [39m
+[90m [2m❯[22m server/__tests__/performance.test.ts:[2m77:17[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mConcurrent Booking Simulation[2m > [22mshould handle race condition for last event slot
+[31m[1mSyntaxError[22m: Unexpected end of JSON input[39m
+[36m [2m❯[22m server/__tests__/performance.test.ts:[2m115:33[22m[39m
+[90m113| [39m body: JSON.stringify({ username: 'alice', password: 'password1…
+[90m114| [39m })[33m;[39m
+[90m115| [39m [35mconst[39m { token[33m:[39m token1 } [33m=[39m [35mawait[39m loginResponse1[33m.[39m[34mjson[39m()[33m;[39m
+[90m | [39m [31m^[39m
+[90m116| [39m
+[90m117| [39m const loginResponse2 = await fetch(`${BASE_URL}/api/auth/login`,…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mLarge Dataset Performance[2m > [22mshould efficiently handle event listing with statistics
+[31m[1mSyntaxError[22m: Unexpected end of JSON input[39m
+[36m [2m❯[22m server/__tests__/performance.test.ts:[2m166:20[22m[39m
+[90m164| [39m [35mconst[39m duration [33m=[39m [33mDate[39m[33m.[39m[34mnow[39m() [33m-[39m start[33m;[39m
+[90m165| [39m
+[90m166| [39m [35mconst[39m data [33m=[39m [35mawait[39m response[33m.[39m[34mjson[39m()[33m;[39m
+[90m | [39m [31m^[39m
+[90m167| [39m
+[90m168| [39m [34mexpect[39m(response[33m.[39mstatus)[33m.[39m[34mtoBe[39m([34m200[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mDatabase Query Performance[2m > [22mshould efficiently query events with joins
+[31m[1mAssertionError[22m: expected 403 to be 200 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 200[39m
+[31m+ 403[39m
+
+[36m [2m❯[22m server/__tests__/performance.test.ts:[2m213:31[22m[39m
+[90m211| [39m [35mconst[39m duration [33m=[39m [33mDate[39m[33m.[39m[34mnow[39m() [33m-[39m start[33m;[39m
+[90m212| [39m
+[90m213| [39m [34mexpect[39m(response[33m.[39mstatus)[33m.[39m[34mtoBe[39m([34m200[39m)[33m;[39m
+[90m | [39m [31m^[39m
+[90m214| [39m [35mconst[39m data [33m=[39m [35mawait[39m response[33m.[39m[34mjson[39m()[33m;[39m
+[90m215| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/performance.test.ts[2m > [22mPerformance Tests[2m > [22mCSV Export Performance[2m > [22mshould generate CSV export within acceptable time
+[31m[1mSyntaxError[22m: Unexpected end of JSON input[39m
+[36m [2m❯[22m server/__tests__/performance.test.ts:[2m230:25[22m[39m
+[90m228| [39m body: JSON.stringify({ username: 'dr.smith', password: 'passwo…
+[90m229| [39m })[33m;[39m
+[90m230| [39m [35mconst[39m { token } [33m=[39m [35mawait[39m loginResponse[33m.[39m[34mjson[39m()[33m;[39m
+[90m | [39m [31m^[39m
+[90m231| [39m
+[90m232| [39m [90m// Get a staff event[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mAuthentication Security[2m > [22mshould reject requests without authentication token
+[31m[1mAssertionError[22m: expected 403 to be 401 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 401[39m
+[31m+ 403[39m
+
+[36m [2m❯[22m server/__tests__/security.test.ts:[2m20:33[22m[39m
+[90m 18| [39m [35mfor[39m ([35mconst[39m endpoint [35mof[39m protectedEndpoints) {
+[90m 19| [39m [35mconst[39m response [33m=[39m [35mawait[39m [34mfetch[39m([32m`[39m[36m${[39m[33mBASE_URL[39m[36m}[39m[32m[39m[36m${[39mendpoint[36m}[39m[32m`[39m)[33m;[39m
+[90m 20| [39m [34mexpect[39m(response[33m.[39mstatus)[33m.[39m[34mtoBe[39m([34m401[39m)[33m;[39m
+[90m | [39m [31m^[39m
+[90m 21| [39m }
+[90m 22| [39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mAuthentication Security[2m > [22mshould not expose password in API responses
+[31m[1mAssertionError[22m: expected 403 to be 200 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 200[39m
+[31m+ 403[39m
+
+[36m [2m❯[22m server/__tests__/security.test.ts:[2m59:31[22m[39m
+[90m 57| [39m })[33m;[39m
+[90m 58| [39m
+[90m 59| [39m [34mexpect[39m(response[33m.[39mstatus)[33m.[39m[34mtoBe[39m([34m200[39m)[33m;[39m
+[90m | [39m [31m^[39m
+[90m 60| [39m [35mconst[39m data [33m=[39m [35mawait[39m response[33m.[39m[34mjson[39m()[33m;[39m
+[90m 61| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mAuthentication Security[2m > [22mshould hash passwords (not stored in plain text)
+[31m[1mSyntaxError[22m: Unexpected end of JSON input[39m
+[36m [2m❯[22m server/__tests__/security.test.ts:[2m73:20[22m[39m
+[90m 71| [39m })[33m;[39m
+[90m 72| [39m
+[90m 73| [39m [35mconst[39m data [33m=[39m [35mawait[39m loginResponse[33m.[39m[34mjson[39m()[33m;[39m
+[90m | [39m [31m^[39m
+[90m 74| [39m
+[90m 75| [39m [90m// User object should never contain password[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mAuthorization Security[2m > [22mshould prevent students from creating events
+[31m[1mSyntaxError[22m: Unexpected end of JSON input[39m
+[36m [2m❯[22m server/__tests__/security.test.ts:[2m90:25[22m[39m
+[90m 88| [39m body: JSON.stringify({ username: 'alice', password: 'password1…
+[90m 89| [39m })[33m;[39m
+[90m 90| [39m [35mconst[39m { token } [33m=[39m [35mawait[39m loginResponse[33m.[39m[34mjson[39m()[33m;[39m
+[90m | [39m [31m^[39m
+[90m 91| [39m
+[90m 92| [39m [90m// Try to create event[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mAuthorization Security[2m > [22mshould prevent staff from accessing another staff member's events
+[31m[1mSyntaxError[22m: Unexpected end of JSON input[39m
+[36m [2m❯[22m server/__tests__/security.test.ts:[2m125:25[22m[39m
+[90m123| [39m body: JSON.stringify({ username: 'prof_jones', password: 'pass…
+[90m124| [39m })[33m;[39m
+[90m125| [39m [35mconst[39m { token } [33m=[39m [35mawait[39m loginResponse[33m.[39m[34mjson[39m()[33m;[39m
+[90m | [39m [31m^[39m
+[90m126| [39m
+[90m127| [39m [90m// Get dr.smith's events[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mAuthorization Security[2m > [22mshould prevent students from exporting attendee data
+[31m[1mSyntaxError[22m: Unexpected end of JSON input[39m
+[36m [2m❯[22m server/__tests__/security.test.ts:[2m150:25[22m[39m
+[90m148| [39m body: JSON.stringify({ username: 'alice', password: 'password1…
+[90m149| [39m })[33m;[39m
+[90m150| [39m [35mconst[39m { token } [33m=[39m [35mawait[39m loginResponse[33m.[39m[34mjson[39m()[33m;[39m
+[90m | [39m [31m^[39m
+[90m151| [39m
+[90m152| [39m [35mconst[39m eventsResponse [33m=[39m [35mawait[39m [34mfetch[39m([32m`[39m[36m${[39m[33mBASE_URL[39m[36m}[39m[32m/api/events`[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mInput Validation & Injection Prevention[2m > [22mshould reject SQL injection attempts in login
+[31m[1mAssertionError[22m: expected 403 to be 401 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 401[39m
+[31m+ 403[39m
+
+[36m [2m❯[22m server/__tests__/security.test.ts:[2m182:33[22m[39m
+[90m180| [39m
+[90m181| [39m [90m// Should fail authentication, not cause server error[39m
+[90m182| [39m [34mexpect[39m(response[33m.[39mstatus)[33m.[39m[34mtoBe[39m([34m401[39m)[33m;[39m
+[90m | [39m [31m^[39m
+[90m183| [39m }
+[90m184| [39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mInput Validation & Injection Prevention[2m > [22mshould reject XSS attempts in event creation
+[31m[1mSyntaxError[22m: Unexpected end of JSON input[39m
+[36m [2m❯[22m server/__tests__/security.test.ts:[2m192:25[22m[39m
+[90m190| [39m body: JSON.stringify({ username: 'dr.smith', password: 'passwo…
+[90m191| [39m })[33m;[39m
+[90m192| [39m [35mconst[39m { token } [33m=[39m [35mawait[39m loginResponse[33m.[39m[34mjson[39m()[33m;[39m
+[90m | [39m [31m^[39m
+[90m193| [39m
+[90m194| [39m [35mconst[39m xssPayload [33m=[39m [32m'<script>alert("XSS")</script>'[39m[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mInput Validation & Injection Prevention[2m > [22mshould validate capacity is a positive integer
+[31m[1mSyntaxError[22m: Unexpected end of JSON input[39m
+[36m [2m❯[22m server/__tests__/security.test.ts:[2m228:25[22m[39m
+[90m226| [39m body: JSON.stringify({ username: 'dr.smith', password: 'passwo…
+[90m227| [39m })[33m;[39m
+[90m228| [39m [35mconst[39m { token } [33m=[39m [35mawait[39m loginResponse[33m.[39m[34mjson[39m()[33m;[39m
+[90m | [39m [31m^[39m
+[90m229| [39m
+[90m230| [39m [35mconst[39m invalidCapacities [33m=[39m [[33m-[39m[34m1[39m[33m,[39m [34m0[39m[33m,[39m [32m'abc'[39m[33m,[39m [35mnull[39m[33m,[39m undefined[33m,[39m [34m1.5[39m][33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mInput Validation & Injection Prevention[2m > [22mshould validate required fields are present
+[31m[1mSyntaxError[22m: Unexpected end of JSON input[39m
+[36m [2m❯[22m server/__tests__/security.test.ts:[2m266:25[22m[39m
+[90m264| [39m body: JSON.stringify({ username: 'dr.smith', password: 'passwo…
+[90m265| [39m })[33m;[39m
+[90m266| [39m [35mconst[39m { token } [33m=[39m [35mawait[39m loginResponse[33m.[39m[34mjson[39m()[33m;[39m
+[90m | [39m [31m^[39m
+[90m267| [39m
+[90m268| [39m [90m// Missing required fields[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mSession Management[2m > [22mshould require new login after logout (if logout implemented)
+[31m[1mSyntaxError[22m: Unexpected end of JSON input[39m
+[36m [2m❯[22m server/__tests__/security.test.ts:[2m292:25[22m[39m
+[90m290| [39m body: JSON.stringify({ username: 'alice', password: 'password1…
+[90m291| [39m })[33m;[39m
+[90m292| [39m [35mconst[39m { token } [33m=[39m [35mawait[39m loginResponse[33m.[39m[34mjson[39m()[33m;[39m
+[90m | [39m [31m^[39m
+[90m293| [39m
+[90m294| [39m [90m// Verify token works[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mSession Management[2m > [22mshould generate unique tokens for each login
+[31m[1mSyntaxError[22m: Unexpected end of JSON input[39m
+[36m [2m❯[22m server/__tests__/security.test.ts:[2m310:33[22m[39m
+[90m308| [39m body: JSON.stringify({ username: 'alice', password: 'password1…
+[90m309| [39m })[33m;[39m
+[90m310| [39m [35mconst[39m { token[33m:[39m token1 } [33m=[39m [35mawait[39m response1[33m.[39m[34mjson[39m()[33m;[39m
+[90m | [39m [31m^[39m
+[90m311| [39m
+[90m312| [39m [35mconst[39m response2 [33m=[39m [35mawait[39m [34mfetch[39m([32m`[39m[36m${[39m[33mBASE_URL[39m[36m}[39m[32m/api/auth/login`[39m[33m,[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mData Protection[2m > [22mshould not leak sensitive information in error messages
+[31m[1mSyntaxError[22m: Unexpected end of JSON input[39m
+[36m [2m❯[22m server/__tests__/security.test.ts:[2m332:20[22m[39m
+[90m330| [39m })[33m;[39m
+[90m331| [39m
+[90m332| [39m [35mconst[39m data [33m=[39m [35mawait[39m response[33m.[39m[34mjson[39m()[33m;[39m
+[90m | [39m [31m^[39m
+[90m333| [39m [35mconst[39m errorMessage [33m=[39m [33mJSON[39m[33m.[39m[34mstringify[39m(data)[33m.[39m[34mtoLowerCase[39m()[33m;[39m
+[90m334| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mCross-Site Request Forgery (CSRF) Protection[2m > [22mshould validate content-type header for POST requests
+[31m[1mAssertionError[22m: expected [ 400, 415 ] to include 403[39m
+[36m [2m❯[22m server/__tests__/security.test.ts:[2m408:26[22m[39m
+[90m406| [39m
+[90m407| [39m [90m// Should reject or handle appropriately[39m
+[90m408| [39m [34mexpect[39m([[34m400[39m[33m,[39m [34m415[39m])[33m.[39m[34mtoContain[39m(response[33m.[39mstatus)[33m;[39m
+[90m | [39m [31m^[39m
+[90m409| [39m })[33m;[39m
+[90m410| [39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/25]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/security.test.ts[2m > [22mSecurity Tests[2m > [22mInformation Disclosure[2m > [22mshould not reveal database errors to client
+[31m[1mSyntaxError[22m: Unexpected end of JSON input[39m
+[36m [2m❯[22m server/__tests__/security.test.ts:[2m417:22[22m[39m
+[90m415| [39m
+[90m416| [39m [35mif[39m (response[33m.[39mstatus [33m>=[39m [34m400[39m) {
+[90m417| [39m [35mconst[39m data [33m=[39m [35mawait[39m response[33m.[39m[34mjson[39m()[33m;[39m
+[90m | [39m [31m^[39m
+[90m418| [39m [35mconst[39m message [33m=[39m [33mJSON[39m[33m.[39m[34mstringify[39m(data)[33m.[39m[34mtoLowerCase[39m()[33m;[39m
+[90m419| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/25]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (5)[39m
+[2m Tests [22m [1m[31m24 failed[39m[22m[2m | [22m[1m[32m65 passed[39m[22m[2m | [22m[33m20 skipped[39m[90m (109)[39m
+[2m Start at [22m 12:24:20
+[2m Duration [22m 1.38s[2m (transform 268ms, setup 100ms, collect 224ms, tests 5.52s, environment 1ms, prepare 38ms)[22m
+
+```
+
+---
+
+## 3. Test Summary by Category
+
+### Overall Results
+
+| Metric | Value |
+|--------|-------|
+| Total Tests | 65 |
+| Tests Passed | 65 |
+| Tests Failed | 24 |
+| Pass Rate | 63% |
+| Execution Time | 1.38s
+5.52s |
+
+### Test Files Summary
+
+| Test File | Status |
+|-----------|--------|
+| booking.logic.test.ts (Unit Tests) | ✅ Passed |
+| api.integration.test.ts (API Tests) | ✅ Passed |
+| performance.test.ts (Performance Tests) | ✅ Passed |
+| security.test.ts (Security Tests) | ✅ Passed |
+| accessibility.test.ts (Accessibility Docs) | ✅ Passed |
+
+---
+
+## 4. Test Categories Breakdown
+
+### 4.1 Unit Tests (Quadrant 1)
+**Focus:** Business logic, capacity calculations, waitlist management
+
+- Capacity calculations with overbooking (+5%)
+- Booking status determination (confirmed vs waitlisted)
+- Waitlist promotion logic (FIFO ordering)
+- Department validation rules
+- Input validation (capacity ranges 1-1000)
+
+### 4.2 API Integration Tests (Quadrant 2)
+**Focus:** Endpoint functionality, authentication, error handling
+
+- Authentication endpoints (login, token validation)
+- Event CRUD operations
+- Booking endpoints (create, cancel, reschedule)
+- Health check endpoint
+- Error response handling
+
+### 4.3 Performance Tests (Quadrant 4)
+**Focus:** Response times, concurrent load, memory usage
+
+- Response time benchmarks (< 2000ms after warm-up)
+- Concurrent request handling (10-50 simultaneous)
+- Memory leak detection
+- CSV export performance
+
+### 4.4 Security Tests (Quadrant 4)
+**Focus:** Authentication, authorization, input validation
+
+- JWT token validation
+- Role-based access control
+- SQL injection prevention
+- XSS prevention
+- Input validation (capacity, event types)
+- X-Powered-By header disabled
+
+### 4.5 Accessibility Documentation (Quadrant 3)
+**Focus:** WCAG 2.1 compliance documentation
+
+- Keyboard navigation requirements
+- Screen reader compatibility
+- Color contrast standards
+- Form accessibility
+
+---
+
+## 5. Quality Assessment
+
+### ⚠️ Some Tests Failed
+
+Please review the failed tests above and address any issues.
+
+**Production Readiness:** NEEDS ATTENTION
+---
+
+## 6. Recommendations
+
+### Completed Security Fixes
+- ✅ DEF-003: X-Powered-By header disabled
+- ✅ DEF-004: Capacity validation enforces 1-1000 range
+
+### Future Improvements
+- Implement rate limiting for production
+- Add Playwright E2E automation
+- Integrate automated accessibility testing (@axe-core)
+- Formal WCAG audit
+
+---
+
+## Report Metadata
+
+| Property | Value |
+|----------|-------|
+| Report Generated | 2025-12-16 12:24:21 |
+| Total Execution Time | 9 seconds |
+| Test Framework | Vitest |
+| Node Version | v23.6.0 |
+| Server PID | 23539 |
+
+---
+
+*This report was automatically generated by the SMUCampusHub Universal Testing Script.*
