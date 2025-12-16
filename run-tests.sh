@@ -9,8 +9,18 @@ OUTPUT_FILE="TEST_RESULTS_$(date '+%Y%m%d_%H%M%S').md"
 TEMP_OUTPUT="/tmp/test_output.txt"
 SERVER_LOG="/tmp/server_startup.log"
 SERVER_PID=""
+CONFIG_SWAPPED=false
 
 start_time=$(date +%s)
+
+# Detect if running on Replit
+if [ -n "$REPL_ID" ]; then
+    echo "Environment: Replit"
+    IS_REPLIT=true
+else
+    echo "Environment: Local Development"
+    IS_REPLIT=false
+fi
 
 # Function to cleanup server on exit
 cleanup() {
@@ -20,6 +30,11 @@ cleanup() {
         kill "$SERVER_PID" 2>/dev/null
         wait "$SERVER_PID" 2>/dev/null
         echo "Server stopped."
+    fi
+    # Restore original vite.config.ts if we swapped it
+    if [ "$CONFIG_SWAPPED" = true ] && [ -f "vite.config.ts.backup" ]; then
+        echo "Restoring original Vite configuration..."
+        mv vite.config.ts.backup vite.config.ts
     fi
     # Also kill any orphaned node processes on port 5000
     pkill -f "node.*server" 2>/dev/null || true
@@ -34,7 +49,18 @@ echo "Step 1: Stopping any existing servers..."
 pkill -f "tsx.*server" 2>/dev/null || true
 pkill -f "node.*vite" 2>/dev/null || true
 lsof -ti:5000 | xargs kill -9 2>/dev/null || true
+fuser -k 5000/tcp 2>/dev/null || true
 sleep 2
+
+# For local development, swap to local Vite config
+if [ "$IS_REPLIT" = false ] && [ -f "vite.config.local.ts" ]; then
+    echo ""
+    echo "Step 1.5: Configuring for local development..."
+    cp vite.config.ts vite.config.ts.backup
+    cp vite.config.local.ts vite.config.ts
+    CONFIG_SWAPPED=true
+    echo "Vite config swapped for local compatibility"
+fi
 
 echo "Step 2: Starting application server..."
 npm run dev > "$SERVER_LOG" 2>&1 &

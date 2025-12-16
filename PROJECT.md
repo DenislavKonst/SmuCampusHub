@@ -83,6 +83,36 @@ Preferred communication style: Simple, everyday language.
 - **Command:** `./run-tests.sh`
 - **Function:** Starts application, runs all tests, generates comprehensive results document
 - **Output:** Creates `TEST_RESULTS_YYYYMMDD_HHMMSS.md` with complete test summary
+- **Environment Detection:** Automatically detects local vs cloud environment and uses appropriate configuration
+
+### Local Development Setup
+
+When running on a local device, the test script automatically handles Vite configuration:
+
+1. **Automatic mode** (recommended):
+   ```bash
+   ./run-tests.sh
+   ```
+   The script detects the local environment and temporarily swaps to `vite.config.local.ts` (without cloud-specific plugins).
+
+2. **Manual development**:
+   ```bash
+   # Swap config for local development
+   cp vite.config.ts vite.config.ts.backup
+   cp vite.config.local.ts vite.config.ts
+   
+   # Run the application
+   npm run dev
+   
+   # Restore when done
+   mv vite.config.ts.backup vite.config.ts
+   ```
+
+### Required Environment Variables
+```bash
+DATABASE_URL=postgresql://user:password@localhost:5432/smucampushub
+SESSION_SECRET=your-secret-key
+```
 
 ## Quality Assurance
 

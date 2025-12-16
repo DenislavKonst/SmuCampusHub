@@ -28,23 +28,71 @@ A full-stack web application for managing university events, lectures, labs, and
 ### Prerequisites
 - Node.js 20+ installed
 - npm or similar package manager
+- PostgreSQL database (local or cloud)
 
 ### Installation
 
-1. **Clone/Open the project** (you're already here!)
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd SMUCampusHub
+   ```
 
 2. **Install dependencies**
    ```bash
    npm install
    ```
 
-3. **Start the application**
+3. **Configure environment variables**
+   
+   Create a `.env` file in the root directory:
+   ```bash
+   DATABASE_URL=postgresql://username:password@localhost:5432/smucampushub
+   SESSION_SECRET=your-secret-key-here
+   ```
+
+4. **Push database schema**
+   ```bash
+   npm run db:push
+   ```
+
+5. **Start the application**
    ```bash
    npm run dev
    ```
 
-4. **Access the application**
+6. **Access the application**
    - Navigate to `http://localhost:5000` in your browser
+
+### Local Development Setup
+
+When running on a local device (not on cloud platforms), the test script automatically handles configuration:
+
+```bash
+# Run all 109 automated tests
+./run-tests.sh
+```
+
+The script will:
+1. Detect the local environment
+2. Temporarily swap to a local-compatible Vite configuration
+3. Start the server and run all tests
+4. Restore the original configuration when complete
+
+**Manual local development** (if needed):
+```bash
+# Backup original config
+cp vite.config.ts vite.config.ts.backup
+
+# Use local config
+cp vite.config.local.ts vite.config.ts
+
+# Run the application
+npm run dev
+
+# When done, restore original
+mv vite.config.ts.backup vite.config.ts
+```
 
 ## 👥 Demo Accounts
 
