@@ -23,6 +23,123 @@ A full-stack web application for managing university events, lectures, labs, and
 - **Capacity Enforcement**: Prevent overbooking beyond set limits
 - **Real-time Updates**: See booking counts and waitlist status instantly
 
+## 🔐 Role-Based Access Control
+
+The application implements comprehensive role-based access control at three levels:
+
+### 1. Frontend (UI Visibility)
+
+| Feature | Student | Staff |
+|---------|---------|-------|
+| Browse all events | Yes | Yes |
+| View event details | Yes | Yes |
+| Book events | Yes | No |
+| Cancel own bookings | Yes | N/A |
+| Reschedule bookings | Yes | N/A |
+| Create events | No | Yes |
+| Edit own events | No | Yes |
+| Delete own events | No | Yes |
+| Export attendee CSV | No | Yes |
+| View booking dashboard | Yes | No |
+| View event management dashboard | No | Yes |
+
+**How roles appear in the UI:**
+- User's role is displayed as a badge ("Staff" or "Student") in the navigation bar
+- User dropdown shows: full name, username, department, and role
+- Dashboard content automatically adapts based on logged-in user's role
+
+### 2. Backend (API Enforcement)
+
+All role restrictions are enforced server-side via middleware:
+
+```
+authenticateToken → Verifies JWT, extracts user role
+requireStaff     → Blocks non-staff from staff-only routes
+```
+
+**Protected Endpoints:**
+
+| Endpoint | Method | Required Role | Description |
+|----------|--------|---------------|-------------|
+| `/api/events` | POST | Staff | Create event |
+| `/api/events/:id` | PUT | Staff | Update event |
+| `/api/events/:id` | DELETE | Staff | Delete event |
+| `/api/events/:id/export` | GET | Staff | Export attendees |
+| `/api/events/staff` | GET | Staff | Get staff's events |
+| `/api/bookings` | POST | Student | Book event |
+| `/api/bookings/user` | GET | Authenticated | Get user's bookings |
+| `/api/bookings/:id` | DELETE | Authenticated | Cancel booking |
+| `/api/bookings/:id/confirm` | POST | Authenticated | Confirm held booking |
+| `/api/bookings/:id/reschedule` | POST | Student | Reschedule booking |
+
+**Error Responses:**
+- `401 Unauthorized` - No valid JWT token provided
+- `403 Forbidden` - Valid token but insufficient role permissions
+
+### 3. Database (Schema Definition)
+
+The `users` table stores role information:
+
+```sql
+CREATE TABLE users (
+  id UUID PRIMARY KEY,
+  username VARCHAR NOT NULL UNIQUE,
+  password VARCHAR NOT NULL,      -- bcrypt hashed
+  full_name VARCHAR NOT NULL,
+  role VARCHAR NOT NULL,          -- 'student' or 'staff'
+  department VARCHAR NOT NULL
+);
+```
+
+**Role Values:**
+- `student` - Can browse events and manage their own bookings
+- `staff` - Can create/manage events and view attendee data
+
+### Testing Role Enforcement
+
+**Test as Student (should succeed):**
+```bash
+# Login as student
+TOKEN=$(curl -s -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"alice","password":"password123"}' | grep -o '"token":"[^"]*' | cut -d'"' -f4)
+
+# Book an event (student-only action)
+curl -X POST http://localhost:5000/api/bookings \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"eventId":"YOUR_EVENT_ID"}'
+```
+
+**Test as Staff (should succeed):**
+```bash
+# Login as staff
+TOKEN=$(curl -s -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"dr.smith","password":"password123"}' | grep -o '"token":"[^"]*' | cut -d'"' -f4)
+
+# Create an event (staff-only action)
+curl -X POST http://localhost:5000/api/events \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Test Event","type":"lecture","department":"Computer Science","date":"2025-01-15","startTime":"10:00","endTime":"11:00","location":"Room 101","capacity":30}'
+```
+
+**Test Role Restriction (should fail with 403):**
+```bash
+# Login as student
+TOKEN=$(curl -s -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"alice","password":"password123"}' | grep -o '"token":"[^"]*' | cut -d'"' -f4)
+
+# Try to create event as student (should return 403)
+curl -X POST http://localhost:5000/api/events \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Unauthorized Event","type":"lecture","department":"Computer Science","date":"2025-01-15","startTime":"10:00","endTime":"11:00","location":"Room 101","capacity":30}'
+# Expected: {"error":"Staff access required"}
+```
+
 ## 🚀 Quick Start
 
 ### Prerequisites
