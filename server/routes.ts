@@ -6,7 +6,7 @@ import { Parser } from 'json2csv';
 import { storage } from "./storage";
 import { loginSchema, insertEventSchema, updateEventSchema } from "@shared/schema";
 import { loggingMiddleware } from "./middleware/logging";
-import { db } from "./db";
+import { db, checkDatabaseConnection } from "./db";
 
 // JWT secret - in production this should be in environment variable
 const JWT_SECRET = process.env.SESSION_SECRET || "your-secret-key-change-in-production";
@@ -92,22 +92,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Health check endpoint with database status
   app.get("/api/health", async (req, res) => {
     try {
-      // Test database connection
-      await db.execute('SELECT 1');
+      const dbStatus = await checkDatabaseConnection();
       
-      res.json({
-        status: "healthy",
-        timestamp: new Date().toISOString(),
-        database: {
-          status: "connected",
-          type: "postgresql"
-        },
-        system: {
-          nodeVersion: process.version,
-          platform: process.platform,
-          uptime: process.uptime()
-        }
-      });
+      if (dbStatus.connected) {
+        res.json({
+          status: "healthy",
+          timestamp: new Date().toISOString(),
+          database: {
+            status: "connected",
+            type: "postgresql"
+          },
+          system: {
+            nodeVersion: process.version,
+            platform: process.platform,
+            uptime: process.uptime()
+          }
+        });
+      } else {
+        res.status(503).json({
+          status: "unhealthy",
+          timestamp: new Date().toISOString(),
+          database: {
+            status: "disconnected",
+            error: dbStatus.error || "Unknown error"
+          }
+        });
+      }
     } catch (error: any) {
       res.status(503).json({
         status: "unhealthy",
