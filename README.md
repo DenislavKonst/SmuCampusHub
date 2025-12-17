@@ -143,14 +143,16 @@ curl -X POST http://localhost:5000/api/events \
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 20+ installed
-- npm or similar package manager
+- Node.js 20+ installed (Node 23 also works)
+- npm or yarn package manager
 - PostgreSQL database (local or cloud)
 
 ### Installation
 
-1. **Clone the repository**
+1. **Clone or download the repository**
    ```bash
+   # From Replit: Download as ZIP and extract
+   # Or clone from git:
    git clone <repository-url>
    cd SMUCampusHub
    ```
@@ -160,65 +162,100 @@ curl -X POST http://localhost:5000/api/events \
    npm install
    ```
 
-3. **Configure environment variables**
-   
-   Copy the example file and fill in your values:
+3. **Set up PostgreSQL database**
    ```bash
-   cp .env.example .env
-   ```
+   # macOS (using Homebrew)
+   brew install postgresql@15
+   brew services start postgresql@15
    
-   Edit `.env` with your database credentials:
-   ```bash
-   DATABASE_URL=postgresql://username:password@localhost:5432/smucampushub
-   SESSION_SECRET=your-secret-key-here
-   ```
-   
-   Generate a secure session secret:
-   ```bash
-   openssl rand -base64 32
+   # Create the database
+   createdb smucampushub
    ```
 
-4. **Push database schema**
+4. **Configure environment variables**
+   ```bash
+   # Copy the example file
+   cp .env.example .env
+   
+   # Edit .env with your credentials
+   # Example for macOS with default PostgreSQL:
+   DATABASE_URL=postgresql://$(whoami):@localhost:5432/smucampushub
+   SESSION_SECRET=$(openssl rand -base64 32)
+   ```
+
+5. **Swap Vite config for local development**
+   ```bash
+   # Required! The default config uses Replit plugins
+   cp vite.config.ts vite.config.ts.replit
+   cp vite.config.local.ts vite.config.ts
+   ```
+
+6. **Push database schema**
    ```bash
    npm run db:push
    ```
 
-5. **Start the application**
+7. **Start the application**
    ```bash
    npm run dev
    ```
 
-6. **Access the application**
+8. **Access the application**
    - Navigate to `http://localhost:5000` in your browser
 
-### Local Development Setup
+### Running Tests Locally
 
-When running on a local device (not on cloud platforms), the test script automatically handles configuration:
+The test script handles all configuration automatically:
 
 ```bash
+# Make executable (first time only)
+chmod +x run-tests.sh
+
 # Run all 109 automated tests
 ./run-tests.sh
 ```
 
 The script will:
-1. Detect the local environment
-2. Temporarily swap to a local-compatible Vite configuration
-3. Start the server and run all tests
-4. Restore the original configuration when complete
+1. Check for `.env` file and `node_modules`
+2. Swap to local-compatible Vite configuration
+3. Start the server and wait for database connection
+4. Run all tests and generate a report
+5. Restore the original configuration when complete
 
-**Manual local development** (if needed):
+### Troubleshooting Local Setup
+
+**"Cannot find package 'vitest'"**
 ```bash
-# Backup original config
-cp vite.config.ts vite.config.ts.backup
+# Dependencies not installed properly
+rm -rf node_modules package-lock.json
+npm install
+```
 
-# Use local config
-cp vite.config.local.ts vite.config.ts
+**"Database connection failed"**
+```bash
+# Check PostgreSQL is running
+pg_isready
 
-# Run the application
-npm run dev
+# Check your .env file exists and has correct credentials
+cat .env
 
-# When done, restore original
-mv vite.config.ts.backup vite.config.ts
+# Verify database exists
+psql -l | grep smucampushub
+```
+
+**"Health check returns empty"**
+```bash
+# Verify server is running
+curl http://localhost:5000/api/health
+
+# Check server logs for errors
+# The run-tests.sh script saves logs to /tmp/server_startup.log
+```
+
+**"Port 5000 already in use"**
+```bash
+# Kill process on port 5000
+lsof -ti:5000 | xargs kill -9
 ```
 
 ## 👥 Demo Accounts

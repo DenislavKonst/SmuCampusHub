@@ -44,12 +44,60 @@ cleanup() {
 trap cleanup EXIT
 
 echo ""
+echo "Step 0: Checking prerequisites..."
+
+# Check if .env file exists for local development
+if [ "$IS_REPLIT" = false ]; then
+    if [ ! -f ".env" ]; then
+        echo ""
+        echo "ERROR: .env file not found!"
+        echo ""
+        echo "Please create a .env file with your database credentials:"
+        echo "  cp .env.example .env"
+        echo "  # Then edit .env with your PostgreSQL credentials"
+        echo ""
+        echo "Required variables:"
+        echo "  DATABASE_URL=postgresql://username:password@localhost:5432/smucampushub"
+        echo "  SESSION_SECRET=your-secret-key"
+        echo ""
+        exit 1
+    fi
+    
+    # Check if node_modules exists
+    if [ ! -d "node_modules" ]; then
+        echo ""
+        echo "Dependencies not installed. Running npm install..."
+        npm install
+        if [ $? -ne 0 ]; then
+            echo "ERROR: npm install failed"
+            exit 1
+        fi
+        echo "Dependencies installed successfully."
+    fi
+    
+    # Verify vitest is available
+    if ! npx vitest --version > /dev/null 2>&1; then
+        echo ""
+        echo "Vitest not found. Installing dependencies..."
+        npm install
+        if [ $? -ne 0 ]; then
+            echo "ERROR: Failed to install dependencies"
+            exit 1
+        fi
+    fi
+fi
+
+echo ""
 echo "Step 1: Stopping any existing servers..."
-# Kill any existing processes on port 5000
+# Kill any existing processes on port 5000 (cross-platform)
 pkill -f "tsx.*server" 2>/dev/null || true
 pkill -f "node.*vite" 2>/dev/null || true
-lsof -ti:5000 | xargs kill -9 2>/dev/null || true
-fuser -k 5000/tcp 2>/dev/null || true
+
+# Use lsof (works on both macOS and Linux)
+if command -v lsof > /dev/null 2>&1; then
+    lsof -ti:5000 2>/dev/null | xargs kill -9 2>/dev/null || true
+fi
+
 sleep 2
 
 # For local development, swap to local Vite config
@@ -114,8 +162,14 @@ done
 
 if [ "$SERVER_READY" = false ]; then
     echo "ERROR: Server failed to start within ${MAX_WAIT} seconds"
+    echo ""
     echo "Server log:"
     tail -50 "$SERVER_LOG"
+    echo ""
+    echo "Common issues:"
+    echo "  1. Database not running - Start PostgreSQL first"
+    echo "  2. Wrong DATABASE_URL in .env file"
+    echo "  3. Port 5000 already in use"
     exit 1
 fi
 
@@ -155,11 +209,19 @@ if [ "$DATABASE_CONNECTED" = false ]; then
 fi
 
 if [ "$DATABASE_CONNECTED" = false ]; then
-    echo "WARNING: Database connection not confirmed."
-    echo "Tests will proceed but some may fail if database is not ready."
-    echo "Health check response:"
-    curl -s http://localhost:5000/api/health | head -5
     echo ""
+    echo "WARNING: Database connection not confirmed."
+    echo ""
+    HEALTH_RESPONSE=$(curl -s http://localhost:5000/api/health)
+    echo "Health check response: $HEALTH_RESPONSE"
+    echo ""
+    echo "Troubleshooting:"
+    echo "  1. Is PostgreSQL running? (check with: pg_isready)"
+    echo "  2. Is DATABASE_URL correct in .env?"
+    echo "  3. Does the database exist? (createdb smucampushub)"
+    echo "  4. Run: npm run db:push to create tables"
+    echo ""
+    echo "Tests will proceed but some may fail..."
 fi
 
 # Phase 3: Stabilization wait for database connections to fully initialize
@@ -278,37 +340,37 @@ echo "|-----------|--------|"
 
 if grep -q "booking.logic.test.ts" "$TEMP_OUTPUT"; then
     if grep -q "booking.logic.test.ts.*failed" "$TEMP_OUTPUT"; then
-        echo "| booking.logic.test.ts (Unit Tests) | ❌ Failed |"
+        echo "| booking.logic.test.ts (Unit Tests) | Failed |"
     else
-        echo "| booking.logic.test.ts (Unit Tests) | ✅ Passed |"
+        echo "| booking.logic.test.ts (Unit Tests) | Passed |"
     fi
 fi
 if grep -q "api.integration.test.ts" "$TEMP_OUTPUT"; then
     if grep -q "api.integration.test.ts.*failed" "$TEMP_OUTPUT"; then
-        echo "| api.integration.test.ts (API Tests) | ❌ Failed |"
+        echo "| api.integration.test.ts (API Tests) | Failed |"
     else
-        echo "| api.integration.test.ts (API Tests) | ✅ Passed |"
+        echo "| api.integration.test.ts (API Tests) | Passed |"
     fi
 fi
 if grep -q "performance.test.ts" "$TEMP_OUTPUT"; then
     if grep -q "performance.test.ts.*failed" "$TEMP_OUTPUT"; then
-        echo "| performance.test.ts (Performance Tests) | ❌ Failed |"
+        echo "| performance.test.ts (Performance Tests) | Failed |"
     else
-        echo "| performance.test.ts (Performance Tests) | ✅ Passed |"
+        echo "| performance.test.ts (Performance Tests) | Passed |"
     fi
 fi
 if grep -q "security.test.ts" "$TEMP_OUTPUT"; then
     if grep -q "security.test.ts.*failed" "$TEMP_OUTPUT"; then
-        echo "| security.test.ts (Security Tests) | ❌ Failed |"
+        echo "| security.test.ts (Security Tests) | Failed |"
     else
-        echo "| security.test.ts (Security Tests) | ✅ Passed |"
+        echo "| security.test.ts (Security Tests) | Passed |"
     fi
 fi
 if grep -q "accessibility.test.ts" "$TEMP_OUTPUT"; then
     if grep -q "accessibility.test.ts.*failed" "$TEMP_OUTPUT"; then
-        echo "| accessibility.test.ts (Accessibility Docs) | ❌ Failed |"
+        echo "| accessibility.test.ts (Accessibility Docs) | Failed |"
     else
-        echo "| accessibility.test.ts (Accessibility Docs) | ✅ Passed |"
+        echo "| accessibility.test.ts (Accessibility Docs) | Passed |"
     fi
 fi
 
@@ -375,7 +437,7 @@ echo "## 5. Quality Assessment"
 echo ""
 
 if [ "${FAILED_TESTS:-0}" = "0" ]; then
-    echo "### ✅ All Tests Passed"
+    echo "### All Tests Passed"
     echo ""
     echo "The SMUCampusHub application has passed all automated tests across:"
     echo "- Unit testing (business logic)"
@@ -386,7 +448,7 @@ if [ "${FAILED_TESTS:-0}" = "0" ]; then
     echo ""
     echo "**Production Readiness:** READY"
 else
-    echo "### ⚠️ Some Tests Failed"
+    echo "### Some Tests Failed"
     echo ""
     echo "Please review the failed tests above and address any issues."
     echo ""
@@ -399,8 +461,8 @@ echo ""
 echo "## 6. Recommendations"
 echo ""
 echo "### Completed Security Fixes"
-echo "- ✅ DEF-003: X-Powered-By header disabled"
-echo "- ✅ DEF-004: Capacity validation enforces 1-1000 range"
+echo "- DEF-003: X-Powered-By header disabled"
+echo "- DEF-004: Capacity validation enforces 1-1000 range"
 echo ""
 echo "### Future Improvements"
 echo "- Implement rate limiting for production"
