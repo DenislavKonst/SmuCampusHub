@@ -151,8 +151,7 @@ curl -X POST http://localhost:5000/api/events \
 
 1. **Clone or download the repository**
    ```bash
-   # From Replit: Download as ZIP and extract
-   # Or clone from git:
+   # Clone from git:
    git clone <repository-url>
    cd SMUCampusHub
    ```
@@ -179,7 +178,14 @@ curl -X POST http://localhost:5000/api/events \
    
    # Edit .env with your credentials
    # Example for macOS with default PostgreSQL:
-   DATABASE_URL=postgresql://$(whoami):@localhost:5432/smucampushub
+   DATABASE_URL=postgresql://ace_prasad:Bday3911*@localhost:5432/smucampushub
+   PGHOST=localhost
+   PGPORT=5432
+   PGUSER=ace_prasad
+   PGPASSWORD=Bday3911*
+   PGDATABASE=smucampushub
+   PORT=5001
+   HOST=127.0.0.1
    SESSION_SECRET=$(openssl rand -base64 32)
    ```
 
@@ -195,13 +201,18 @@ curl -X POST http://localhost:5000/api/events \
    npm run db:push
    ```
 
+6. **Populate Database**
+   ```bash
+   npx tsx server/seed.ts
+   ```
+
 7. **Start the application**
    ```bash
    npm run dev
    ```
 
 8. **Access the application**
-   - Navigate to `http://localhost:5000` in your browser
+   - Navigate to `http://127.0.0.1:5001` in your browser
 
 ### Running Tests Locally
 
@@ -209,10 +220,10 @@ The test script handles all configuration automatically:
 
 ```bash
 # Make executable (first time only)
-chmod +x run-tests.sh
+chmod +x run-tests-v2.sh
 
 # Run all 109 automated tests
-./run-tests.sh
+./run-tests-v2.sh
 ```
 
 The script will:
@@ -221,6 +232,50 @@ The script will:
 3. Start the server and wait for database connection
 4. Run all tests and generate a report
 5. Restore the original configuration when complete
+
+### Run All Automated Tests
+```bash
+npx vitest run
+```
+
+### Run Tests by Quadrant
+
+**Quadrant 1 - Unit Tests:**
+```bash
+npx vitest run server/__tests__/booking.logic.test.ts
+```
+
+**Quadrant 2 - API Integration Tests:**
+```bash
+npx vitest run server/__tests__/api.integration.test.ts
+```
+
+**Quadrant 4 - Performance Tests:**
+```bash
+npx vitest run server/__tests__/performance.test.ts
+```
+
+**Quadrant 4 - Security Tests:**
+```bash
+npx vitest run server/__tests__/security.test.ts
+```
+
+### Run Tests in Watch Mode
+```bash
+npx vitest
+```
+
+### Run Tests with Coverage
+```bash
+npx vitest run --coverage
+```
+
+### Run Tests with UI
+```bash
+npx vitest --ui
+```
+
+---
 
 ### Troubleshooting Local Setup
 

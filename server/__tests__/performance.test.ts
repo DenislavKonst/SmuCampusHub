@@ -7,7 +7,7 @@
 
 import { describe, it, expect } from 'vitest';
 
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = 'http://localhost:5001';
 
 describe('Performance Tests', () => {
   describe('Response Time Benchmarks', () => {

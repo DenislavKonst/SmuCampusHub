@@ -1,28 +1,31 @@
 import 'dotenv/config';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import { Pool as NeonPool, neonConfig } from '@neondatabase/serverless';
-import ws from "ws";
-import * as schema from "@shared/schema";
-
-// Configure WebSocket for Neon (required for serverless)
-neonConfig.webSocketConstructor = ws;
+import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres'; // <-- correct for v0.39.x
+import * as schema from '@shared/schema';
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
+    'DATABASE_URL must be set. Example: postgres://username:password@localhost:5432/dbname',
   );
 }
 
-// Create pool with connection string
-export const pool = new NeonPool({ connectionString: process.env.DATABASE_URL });
+// Create a PostgreSQL connection pool
+export const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
-// Create drizzle instance
-export const db = drizzle({ client: pool, schema });
+// Create Drizzle instance for PostgreSQL
+export const db = drizzle({
+  client: pool,
+  schema,
+});
 
-// Health check function that properly tests the database connection
+// ------------------------------
+// Health check
+// ------------------------------
 export async function checkDatabaseConnection(): Promise<{ connected: boolean; error?: string }> {
   try {
-    const result = await pool.query('SELECT 1 as ok');
+    const result = await pool.query('SELECT 1 AS ok');
     if (result.rows[0]?.ok === 1) {
       return { connected: true };
     }
@@ -33,22 +36,26 @@ export async function checkDatabaseConnection(): Promise<{ connected: boolean; e
   }
 }
 
-// Initialize database connection
-export async function initializeDatabase(): Promise<boolean> {
+// ------------------------------
+// Retry initialization
+// ------------------------------
+export async function initializeDatabase(maxAttempts = 5): Promise<boolean> {
   console.log('[DB] Initializing database connection...');
-  
-  for (let attempt = 1; attempt <= 3; attempt++) {
+
+  let delay = 1000;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     const result = await checkDatabaseConnection();
     if (result.connected) {
       console.log('[DB] Database connected successfully');
       return true;
     }
-    console.log(`[DB] Connection attempt ${attempt}/3 failed: ${result.error}`);
-    if (attempt < 3) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+    console.log(`[DB] Attempt ${attempt}/${maxAttempts} failed: ${result.error}`);
+    if (attempt < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, delay));
+      delay *= 2; // exponential backoff
     }
   }
-  
-  console.error('[DB] Failed to connect after 3 attempts');
+
+  console.error('[DB] Failed to connect after all attempts');
   return false;
 }

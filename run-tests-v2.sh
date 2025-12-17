@@ -36,7 +36,7 @@ cleanup() {
         echo "Restoring original Vite configuration..."
         mv vite.config.ts.backup vite.config.ts
     fi
-    # Also kill any orphaned node processes on port 5000
+    # Also kill any orphaned node processes on port 5001
     pkill -f "node.*server" 2>/dev/null || true
 }
 
@@ -89,25 +89,44 @@ fi
 
 echo ""
 echo "Step 1: Stopping any existing servers..."
-# Kill any existing processes on port 5000 (cross-platform)
+# Kill any existing processes on port 5001 (cross-platform)
 pkill -f "tsx.*server" 2>/dev/null || true
 pkill -f "node.*vite" 2>/dev/null || true
 
 # Use lsof (works on both macOS and Linux)
 if command -v lsof > /dev/null 2>&1; then
-    lsof -ti:5000 2>/dev/null | xargs kill -9 2>/dev/null || true
+    lsof -ti:5001 2>/dev/null | xargs kill -9 2>/dev/null || true
 fi
 
 sleep 2
 
-# For local development, swap to local Vite config
-if [ "$IS_REPLIT" = false ] && [ -f "vite.config.local.ts" ]; then
-    echo ""
-    echo "Step 1.5: Configuring for local development..."
-    cp vite.config.ts vite.config.ts.backup
-    cp vite.config.local.ts vite.config.ts
-    CONFIG_SWAPPED=true
-    echo "Vite config swapped for local compatibility"
+# For local development, swap to local Vite config and load .env
+if [ "$IS_REPLIT" = false ]; then
+    if [ -f "vite.config.local.ts" ]; then
+        echo ""
+        echo "Step 1.5: Configuring for local development..."
+        cp vite.config.ts vite.config.ts.backup
+        cp vite.config.local.ts vite.config.ts
+        CONFIG_SWAPPED=true
+        echo "Vite config swapped for local compatibility"
+    fi
+    
+    # CRITICAL: Load .env file into current shell environment
+    echo "Loading environment variables from .env..."
+    set -a  # Mark all variables for export
+    source .env
+    set +a  # Unset the automatic export
+    
+    # Verify critical variables are set
+    if [ -z "$DATABASE_URL" ]; then
+        echo "ERROR: DATABASE_URL not set in .env file"
+        exit 1
+    fi
+    if [ -z "$SESSION_SECRET" ]; then
+        echo "ERROR: SESSION_SECRET not set in .env file"
+        exit 1
+    fi
+    echo "Environment variables loaded successfully"
 fi
 
 echo "Step 2: Starting application server..."
@@ -117,7 +136,7 @@ echo "Server started with PID: $SERVER_PID"
 
 # Function to check if database is connected via health endpoint
 check_database_connected() {
-    local response=$(curl -s http://localhost:5000/api/health 2>/dev/null)
+    local response=$(curl -s http://localhost:5001/api/health 2>/dev/null)
     if echo "$response" | grep -q '"status":"connected"'; then
         return 0
     fi
@@ -126,7 +145,7 @@ check_database_connected() {
 
 # Function to check if server is responding
 check_server_responding() {
-    curl -s http://localhost:5000/api/health > /dev/null 2>&1
+    curl -s http://localhost:5001/api/health > /dev/null 2>&1
     return $?
 }
 
@@ -169,7 +188,7 @@ if [ "$SERVER_READY" = false ]; then
     echo "Common issues:"
     echo "  1. Database not running - Start PostgreSQL first"
     echo "  2. Wrong DATABASE_URL in .env file"
-    echo "  3. Port 5000 already in use"
+    echo "  3. Port 5001 already in use"
     exit 1
 fi
 
@@ -212,7 +231,7 @@ if [ "$DATABASE_CONNECTED" = false ]; then
     echo ""
     echo "WARNING: Database connection not confirmed."
     echo ""
-    HEALTH_RESPONSE=$(curl -s http://localhost:5000/api/health)
+    HEALTH_RESPONSE=$(curl -s http://localhost:5001/api/health)
     echo "Health check response: $HEALTH_RESPONSE"
     echo ""
     echo "Troubleshooting:"
@@ -230,7 +249,7 @@ sleep $DB_STABILIZATION_WAIT
 
 # Final health check verification
 echo "  Final health check..."
-HEALTH_STATUS=$(curl -s http://localhost:5000/api/health)
+HEALTH_STATUS=$(curl -s http://localhost:5001/api/health)
 echo "  Health: $HEALTH_STATUS" | head -1
 
 echo ""
@@ -286,7 +305,7 @@ echo "### Server Status"
 echo "✅ **Application Status:** Server started successfully"
 echo ""
 echo "### Health Check Response"
-HEALTH_RESPONSE=$(curl -s http://localhost:5000/api/health)
+HEALTH_RESPONSE=$(curl -s http://localhost:5001/api/health)
 echo "\`\`\`json"
 echo "$HEALTH_RESPONSE" | python3 -m json.tool 2>/dev/null || echo "$HEALTH_RESPONSE"
 echo "\`\`\`"

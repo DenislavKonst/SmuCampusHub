@@ -5,7 +5,7 @@ import { describe, it, expect, beforeAll } from 'vitest';
  * Tests for REST API endpoints, authentication, and data flow
  */
 
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = 'http://localhost:5001';
 
 describe('API Integration Tests', () => {
   let authToken: string;
